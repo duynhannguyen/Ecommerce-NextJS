@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import Link from "next/link";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -11,12 +12,28 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
+  userProfile,
 }: Readonly<{
   children: React.ReactNode;
+  userProfile: React.ReactNode;
 }>) {
+  const isAdmin = false;
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+      <body className={inter.className}>
+        <nav>
+          <ul className="flex gap-2 justify-between px-4 bg-blue-400 ">
+            <li>
+              <Link href={"/"}>Home</Link>
+            </li>
+            <li>
+              <Link href={"/about"}>About</Link>
+            </li>
+          </ul>
+        </nav>
+        {children}
+        {isAdmin && userProfile}
+      </body>
     </html>
   );
 }

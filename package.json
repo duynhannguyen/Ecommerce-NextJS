@@ -6,21 +6,28 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "db:generate": "npx drizzle-kit generate --config=drizzle.config.ts ",
+    "db:migrate": "npx drizzle-kit migrate --config=drizzle.config.ts "
   },
   "dependencies": {
-    "react": "^18",
-    "react-dom": "^18",
-    "next": "14.2.4"
+    "@neondatabase/serverless": "^0.9.4",
+    "bg": "^1.0.0",
+    "dotenv": "^16.4.5",
+    "drizzle-orm": "^0.31.2",
+    "next": "14.2.4",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
   },
   "devDependencies": {
-    "typescript": "^5",
-    "@types/node": "^20",
-    "@types/react": "^18",
-    "@types/react-dom": "^18",
-    "postcss": "^8",
-    "tailwindcss": "^3.4.1",
-    "eslint": "^8",
-    "eslint-config-next": "14.2.4"
+    "@types/node": "^20.14.9",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "drizzle-kit": "^0.22.8",
+    "eslint": "^8.57.0",
+    "eslint-config-next": "14.2.4",
+    "postcss": "^8.4.39",
+    "tailwindcss": "^3.4.4",
+    "typescript": "^5.5.3"
   }
 }
