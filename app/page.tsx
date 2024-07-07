@@ -1,4 +1,5 @@
 import PostButton from "@/components/post-button";
+import { Button } from "@/components/ui/button";
 import createPost from "@/server/actions/create-post";
 import getPosts from "@/server/actions/get-post";
 import { cookies } from "next/headers";
@@ -27,6 +28,7 @@ export default async function Home() {
             placeholder="Title"
           />
           <PostButton />
+          <Button> Click me </Button>
         </form>
         <div> {Date.now()}</div>
       </main>
