@@ -6,7 +6,7 @@ import { LogIn } from "lucide-react";
 const Nav = async () => {
   const session = await auth();
   return (
-    <header className="bg-slate-500 py-4">
+    <header className="py-8">
       <nav>
         <ul className="flex justify-between ">
           <li>Logo</li>

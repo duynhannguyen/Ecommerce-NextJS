@@ -9,11 +9,7 @@ const LoginForm = () => {
       BackButtonHref="/auth/register"
       BackButtonLabel="Create new account"
       showSocials={true}
-    >
-      <div>
-        <h1> Hey</h1>
-      </div>
-    </AuthCard>
+    ></AuthCard>
   );
 };
 
