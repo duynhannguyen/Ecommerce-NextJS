@@ -15,6 +15,13 @@
       "when": 1720466521658,
       "tag": "0001_robust_forge",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1720678776788,
+      "tag": "0002_same_talos",
+      "breakpoints": true
     }
   ]
 }
