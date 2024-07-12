@@ -20,6 +20,7 @@ import Link from "next/link";
 import { emailSignIn } from "@/server/actions/email-signin";
 import { useAction } from "next-safe-action/hooks";
 import { cn } from "@/lib/utils";
+import { useState } from "react";
 const LoginForm = () => {
   const form = useForm({
     resolver: zodResolver(LoginSchema),
@@ -29,7 +30,13 @@ const LoginForm = () => {
     },
   });
 
-  const { execute, status } = useAction(emailSignIn, {});
+  const [error, setError] = useState("");
+
+  const { execute, status } = useAction(emailSignIn, {
+    onSuccess(data) {
+      console.log("data", data);
+    },
+  });
 
   const onSubmit = (values: z.infer<typeof LoginSchema>) => {
     execute(values);
