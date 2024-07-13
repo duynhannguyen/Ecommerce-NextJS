@@ -19,10 +19,12 @@ export const posts = pgTable("post", {
 export const users = pgTable("user", {
   id: text("id")
     .primaryKey()
-    .$defaultFn(() => crypto.randomUUID()),
+    .$defaultFn(() => crypto.randomUUID())
+    .notNull(),
   name: text("name"),
   email: text("email").notNull(),
   emailVerified: timestamp("emailVerified", { mode: "date" }),
+  password: text("password"),
   image: text("image"),
   twoFactorEnabled: boolean("twoFactorEnabled").default(false),
   role: RoleEnum("roles").default("user"),
@@ -60,20 +62,6 @@ export const sessions = pgTable("session", {
   expires: timestamp("expires", { mode: "date" }).notNull(),
 });
 
-export const verificationTokens = pgTable(
-  "verificationToken",
-  {
-    identifier: text("identifier").notNull(),
-    token: text("token").notNull(),
-    expires: timestamp("expires", { mode: "date" }).notNull(),
-  },
-  (verificationToken) => ({
-    compositePk: primaryKey({
-      columns: [verificationToken.identifier, verificationToken.token],
-    }),
-  })
-);
-
 export const authenticators = pgTable(
   "authenticator",
   {
@@ -91,6 +79,23 @@ export const authenticators = pgTable(
   (authenticator) => ({
     compositePK: primaryKey({
       columns: [authenticator.userId, authenticator.credentialID],
+    }),
+  })
+);
+
+export const emailTokens = pgTable(
+  "email_tokens",
+  {
+    id: text("identifier")
+      .notNull()
+      .$defaultFn(() => crypto.randomUUID()),
+    token: text("token").notNull(),
+    expires: timestamp("expires", { mode: "date" }).notNull(),
+    email: text("email").notNull(),
+  },
+  (vt) => ({
+    compositePk: primaryKey({
+      columns: [vt.id, vt.token],
     }),
   })
 );
