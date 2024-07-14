@@ -21,6 +21,8 @@ import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { RegisterSchema } from "@/types/register-schema";
 import { EmailRegister } from "@/server/actions/email-register";
+import FormSuccess from "./form-success";
+import FormError from "./form-error";
 const RegisterForm = () => {
   const form = useForm({
     resolver: zodResolver(RegisterSchema),
@@ -30,14 +32,15 @@ const RegisterForm = () => {
       name: "",
     },
   });
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
   const { execute, status } = useAction(EmailRegister, {
     onSuccess(data) {
-      console.log("data", data);
+      if (data.data?.error) setError(data.data.error);
+      if (data.data?.success) setSuccess(data.data.success);
     },
   });
-
-  const [error, setError] = useState("");
 
   const onSubmit = (values: z.infer<typeof RegisterSchema>) => {
     execute(values);
@@ -111,6 +114,8 @@ const RegisterForm = () => {
                 </FormItem>
               )}
             />
+            <FormSuccess message={success} />
+            <FormError message={error} />
             <Button size={"sm"} variant={"link"} asChild>
               <Link href={"/auth/reset"}> Forgot your password </Link>
             </Button>

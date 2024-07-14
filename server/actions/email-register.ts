@@ -7,6 +7,7 @@ import { users } from "../schema";
 import { eq } from "drizzle-orm";
 import bcrypt from "bcrypt";
 import generateEmailVerificationToken from "./tokens";
+import sendVerificationEmail from "./email";
 
 const action = createSafeActionClient();
 
@@ -21,6 +22,10 @@ export const EmailRegister = action
     if (exitstingUser) {
       if (!exitstingUser.emailVerified) {
         const verificationToken = await generateEmailVerificationToken(email);
+        await sendVerificationEmail(
+          verificationToken[0].email,
+          verificationToken[0].token
+        );
         return { success: "Email Confirmation resent" };
       }
       return { error: "Email already in use " };
@@ -33,6 +38,9 @@ export const EmailRegister = action
     });
 
     const verificationToken = await generateEmailVerificationToken(email);
-
+    await sendVerificationEmail(
+      verificationToken[0].email,
+      verificationToken[0].token
+    );
     return { success: " Confirmation Email Sent! " };
   });
