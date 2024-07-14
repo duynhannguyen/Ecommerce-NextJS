@@ -51,7 +51,7 @@ const RegisterForm = () => {
       cardTitle="Create an account 🎉"
       BackButtonHref="/auth/login"
       BackButtonLabel="Already have an account?"
-      showSocials={true}
+      showSocials={false}
     >
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>

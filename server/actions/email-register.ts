@@ -38,6 +38,7 @@ export const EmailRegister = action
     });
 
     const verificationToken = await generateEmailVerificationToken(email);
+    console.log("verificationToken", verificationToken);
     await sendVerificationEmail(
       verificationToken[0].email,
       verificationToken[0].token
