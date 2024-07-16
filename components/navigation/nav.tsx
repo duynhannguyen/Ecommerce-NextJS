@@ -9,9 +9,9 @@ const Nav = async () => {
   return (
     <header className="py-8">
       <nav>
-        <ul className="flex justify-between ">
+        <ul className="flex justify-between items-center ">
           <li>
-            <Link href={"/"} title="logo">
+            <Link href={"/"} title="logo" aria-label="sprout and scrible logo">
               <Logo />{" "}
             </Link>
           </li>
