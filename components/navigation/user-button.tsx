@@ -14,8 +14,27 @@ import {
 } from "@/components/ui/dropdown-menu";
 import Image from "next/image";
 import { LogOut, Moon, SettingsIcon, Sun, TruckIcon } from "lucide-react";
+import { useTheme } from "next-themes";
+import { useEffect, useState } from "react";
+import { Switch } from "../ui/switch";
 
 const UserButton = ({ user }: Session) => {
+  const { setTheme, theme } = useTheme();
+  const [checked, setChecked] = useState(false);
+  useEffect(() => {
+    setSwitchState();
+  }, []);
+  const setSwitchState = () => {
+    switch (theme) {
+      case "dark":
+        return setChecked(true);
+
+      case "light":
+        return setChecked(false);
+      default:
+        return setChecked(false);
+    }
+  };
   if (user)
     return (
       <div>
@@ -23,7 +42,13 @@ const UserButton = ({ user }: Session) => {
           <DropdownMenuTrigger>
             <Avatar className="bg-primary/25">
               {user.image && (
-                <Image src={user.image} alt={user.name!} fill={true} />
+                <Image
+                  src={user.image}
+                  alt={user.name!}
+                  fill={true}
+                  sizes="(max-width: 40px) 100vw, (max-width: 40) 50vw, 33vw"
+                  priority={true}
+                />
               )}
               {!user.image && (
                 <AvatarFallback>
@@ -43,6 +68,8 @@ const UserButton = ({ user }: Session) => {
                   alt={user.name!}
                   width={36}
                   height={36}
+                  sizes="(max-width: 40px) 100vw, (max-width: 40) 50vw, 33vw"
+                  priority={true}
                 />
               )}
               <p className=" font-bold text-xs"> {user.name} </p>
@@ -52,7 +79,7 @@ const UserButton = ({ user }: Session) => {
               </span>
             </div>
             <DropdownMenuSeparator />
-            <DropdownMenuItem className=" group py-2 font-medium cursor-pointer transition-all duration-500 ">
+            <DropdownMenuItem className=" group py-2 font-medium cursor-pointer transition-all duration-500 ease-in-out ">
               {" "}
               <TruckIcon
                 size={15}
@@ -68,18 +95,40 @@ const UserButton = ({ user }: Session) => {
               />{" "}
               Setting
             </DropdownMenuItem>
-            <DropdownMenuItem className=" py-2 font-medium cursor-pointer transition-all duration-500 ">
-              <div className=" flex items-center">
-                <Sun size={15} />
-                <Moon size={15} />
-                <p>
-                  Theme <span>Theme</span>{" "}
-                </p>
-              </div>
-            </DropdownMenuItem>
+            {theme && (
+              <DropdownMenuItem className=" py-2 font-medium cursor-pointer transition-all duration-500 ease-in-out ">
+                <div
+                  onClick={(e) => e.stopPropagation()}
+                  className=" flex items-center group "
+                >
+                  <div className="relative flex mr-3 ">
+                    <Sun
+                      className=" absolute  group-hover:text-yellow-600 group-hover:rotate-180 dark:scale-0 drak: -rotate-90 transition-all duration-300 ease-in-out "
+                      size={15}
+                    />
+                    <Moon
+                      className="group-hover:text-blue-400 transition-all duration-300 ease-in-out dark:scale-100 scale-0 "
+                      size={15}
+                    />
+                  </div>
+                  <p className="dark:text-blue-400 text-secondary-foreground/75  text-yellow-400   ">
+                    {theme[0].toUpperCase() + theme?.slice(1)} Mode
+                  </p>{" "}
+                  <Switch
+                    className="scale-75 ml-2"
+                    checked={checked}
+                    onCheckedChange={(e) => {
+                      setChecked((prev) => !prev);
+                      if (e) setTheme("dark");
+                      if (!e) setTheme("light");
+                    }}
+                  />
+                </div>
+              </DropdownMenuItem>
+            )}
             <DropdownMenuItem
               onClick={() => signOut()}
-              className=" group py-2 focus:bg-destructive/30 font-medium cursor-pointer transition-all duration-500 "
+              className=" group py-2 focus:bg-destructive/30 font-medium cursor-pointer transition-all duration-500 ease-in-out "
             >
               <LogOut
                 size={15}
