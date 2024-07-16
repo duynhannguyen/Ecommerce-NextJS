@@ -13,74 +13,59 @@ import {
 import { Input } from "../ui/input";
 import AuthCard from "./auth-card";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { LoginSchema } from "@/types/login-schema";
 import * as z from "zod";
 import { Button } from "../ui/button";
 import Link from "next/link";
-import { emailSignIn } from "@/server/actions/email-signin";
 import { useAction } from "next-safe-action/hooks";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 import FormError from "./form-error";
 import FormSuccess from "./form-success";
-const LoginForm = () => {
-  const form = useForm({
-    resolver: zodResolver(LoginSchema),
+import { newPasswordSchema } from "@/types/new-password-schema";
+import newPassword from "@/server/actions/new-password";
+import { useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
+const NewPasswordForm = () => {
+  const form = useForm<z.infer<typeof newPasswordSchema>>({
+    resolver: zodResolver(newPasswordSchema),
     defaultValues: {
-      email: "",
       password: "",
     },
   });
-
+  const router = useRouter();
+  const token = useSearchParams().get("token");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
-  const { execute, status } = useAction(emailSignIn, {
+  const { execute, status } = useAction(newPassword, {
     onSuccess(data) {
       if (data.data?.error) {
         setError(data.data.error);
       }
       if (data.data?.success) {
         setSuccess(data.data.success);
+        router.push("/auth/login");
       }
     },
   });
 
-  const onSubmit = (values: z.infer<typeof LoginSchema>) => {
-    execute(values);
+  const onSubmit = (values: z.infer<typeof newPasswordSchema>) => {
+    execute({
+      password: values.password,
+      token,
+    });
   };
 
   return (
     <AuthCard
-      cardTitle="Welcome back"
-      BackButtonHref="/auth/register"
-      BackButtonLabel="Create new account"
+      cardTitle="Enter a new password"
+      BackButtonHref="/auth/login"
+      BackButtonLabel="Back to login"
       showSocials={true}
     >
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <div>
-            <FormField
-              name="email"
-              control={form.control}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Email</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="a@gmail.com"
-                      type="email"
-                      autoComplete="email"
-                      {...field}
-                    />
-                  </FormControl>
-                  {/* <FormDescription>
-                    This is your public display name.
-                  </FormDescription> */}
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
             <FormField
               name="password"
               control={form.control}
@@ -92,6 +77,7 @@ const LoginForm = () => {
                       placeholder="********"
                       type="password"
                       autoComplete="current-password"
+                      disabled={status === "executing"}
                       {...field}
                     />
                   </FormControl>
@@ -115,7 +101,7 @@ const LoginForm = () => {
               status === "executing" ? "animate-pulse" : ""
             )}
           >
-            Login
+            Reset Password
           </Button>
         </form>
       </Form>
@@ -123,4 +109,4 @@ const LoginForm = () => {
   );
 };
 
-export default LoginForm;
+export default NewPasswordForm;

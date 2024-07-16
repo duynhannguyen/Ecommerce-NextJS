@@ -13,29 +13,28 @@ import {
 import { Input } from "../ui/input";
 import AuthCard from "./auth-card";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { LoginSchema } from "@/types/login-schema";
 import * as z from "zod";
 import { Button } from "../ui/button";
 import Link from "next/link";
-import { emailSignIn } from "@/server/actions/email-signin";
 import { useAction } from "next-safe-action/hooks";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 import FormError from "./form-error";
 import FormSuccess from "./form-success";
-const LoginForm = () => {
-  const form = useForm({
-    resolver: zodResolver(LoginSchema),
+import { ResetSchema } from "@/types/reset-schema";
+import { passwordReset } from "@/server/actions/password-reset";
+const ResetForm = () => {
+  const form = useForm<z.infer<typeof ResetSchema>>({
+    resolver: zodResolver(ResetSchema),
     defaultValues: {
       email: "",
-      password: "",
     },
   });
 
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
-  const { execute, status } = useAction(emailSignIn, {
+  const { execute, status } = useAction(passwordReset, {
     onSuccess(data) {
       if (data.data?.error) {
         setError(data.data.error);
@@ -46,15 +45,15 @@ const LoginForm = () => {
     },
   });
 
-  const onSubmit = (values: z.infer<typeof LoginSchema>) => {
+  const onSubmit = (values: z.infer<typeof ResetSchema>) => {
     execute(values);
   };
 
   return (
     <AuthCard
-      cardTitle="Welcome back"
-      BackButtonHref="/auth/register"
-      BackButtonLabel="Create new account"
+      cardTitle="Forgot your password ?"
+      BackButtonHref="/auth/login"
+      BackButtonLabel="Back to login"
       showSocials={true}
     >
       <Form {...form}>
@@ -68,30 +67,10 @@ const LoginForm = () => {
                   <FormLabel>Email</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="a@gmail.com"
+                      placeholder="test@gmail.com"
                       type="email"
+                      disabled={status === "executing"}
                       autoComplete="email"
-                      {...field}
-                    />
-                  </FormControl>
-                  {/* <FormDescription>
-                    This is your public display name.
-                  </FormDescription> */}
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              name="password"
-              control={form.control}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Password</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="********"
-                      type="password"
-                      autoComplete="current-password"
                       {...field}
                     />
                   </FormControl>
@@ -115,7 +94,7 @@ const LoginForm = () => {
               status === "executing" ? "animate-pulse" : ""
             )}
           >
-            Login
+            Reset Password
           </Button>
         </form>
       </Form>
@@ -123,4 +102,4 @@ const LoginForm = () => {
   );
 };
 
-export default LoginForm;
+export default ResetForm;

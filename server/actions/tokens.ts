@@ -2,7 +2,7 @@
 
 import { eq } from "drizzle-orm";
 import { db } from "..";
-import { emailTokens, users } from "../schema";
+import { emailTokens, passwordResetToken, users } from "../schema";
 
 export const getVerificationTokenByEmail = async (email: string) => {
   try {
@@ -59,4 +59,53 @@ export const newVerification = async (email: string) => {
   await db.delete(emailTokens).where(eq(emailTokens.id, exitstingToken.id));
 
   return { success: "Email Verified" };
+};
+
+export const getPasswordRestTokenByToken = async (token: string) => {
+  try {
+    const exitstingToken = await db.query.passwordResetToken.findFirst({
+      where: eq(passwordResetToken.token, token),
+    });
+
+    return exitstingToken;
+  } catch (error) {
+    return null;
+  }
+};
+
+export const getPasswordResetTokenByEmail = async (email: string) => {
+  try {
+    const resetToken = db.query.passwordResetToken.findFirst({
+      where: eq(passwordResetToken.email, email),
+    });
+    return resetToken;
+  } catch (error) {
+    return null;
+  }
+};
+
+export const generatePasswordResetToken = async (email: string) => {
+  try {
+    const token = crypto.randomUUID();
+
+    const expires = new Date(new Date().getTime() + 3600 * 1000);
+
+    const exitstingToken = await getPasswordResetTokenByEmail(email);
+    if (exitstingToken) {
+      await db
+        .delete(passwordResetToken)
+        .where(eq(passwordResetToken.id, exitstingToken.id));
+    }
+    const passwordResetTokens = await db
+      .insert(passwordResetToken)
+      .values({
+        email,
+        token,
+        expires,
+      })
+      .returning();
+    return passwordResetTokens;
+  } catch (error) {
+    return null;
+  }
 };
