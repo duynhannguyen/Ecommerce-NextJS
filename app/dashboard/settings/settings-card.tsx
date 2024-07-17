@@ -28,6 +28,8 @@ import { Switch } from "@/components/ui/switch";
 import FormError from "@/components/auth/form-error";
 import FormSuccess from "@/components/auth/form-success";
 import { useState } from "react";
+import { useAction } from "next-safe-action/hooks";
+import { settings } from "@/server/actions/settings";
 
 type SettingsForm = {
   session: Session;
@@ -35,8 +37,8 @@ type SettingsForm = {
 
 export default function SettingsCard(session: SettingsForm) {
   console.log("session", session);
-  const [error, setError] = useState<string | null>("");
-  const [success, setSuccess] = useState<string | null>("");
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const [avatarUploading, setAvatarUploading] = useState(false);
   console.log("session", session.session);
   const form = useForm<z.infer<typeof SettingSchema>>({
@@ -44,9 +46,19 @@ export default function SettingsCard(session: SettingsForm) {
     defaultValues: {
       password: undefined,
       newPassword: undefined,
-      name: session.session.user?.name || undefined,
-      email: session.session.user?.email || undefined,
-      // isTwoFactorEnabled: session.session.isTwoFactorEnabled || undefined
+      name: session.session.user.name || undefined,
+      email: session.session.user.email || undefined,
+      image: session.session.user.image || undefined,
+      isTwoFactorEnabled: session.session.user.isTwoFactorEnabled || undefined,
+    },
+  });
+  const { execute, status } = useAction(settings, {
+    onSuccess: (data) => {
+      if (data.data?.success) setSuccess(data.data.success);
+      if (data.data?.error) setError(data.data.error);
+    },
+    onError: (error) => {
+      setError("Something went wrong");
     },
   });
 
@@ -121,7 +133,10 @@ export default function SettingsCard(session: SettingsForm) {
                   <FormControl>
                     <Input
                       placeholder="*******"
-                      disabled={status === "executing"}
+                      disabled={
+                        status === "executing" ||
+                        session.session.user.isOAuth === true
+                      }
                       {...field}
                     />
                   </FormControl>
@@ -139,7 +154,10 @@ export default function SettingsCard(session: SettingsForm) {
                   <FormControl>
                     <Input
                       placeholder="*******"
-                      disabled={status === "executing"}
+                      disabled={
+                        status === "executing" ||
+                        session.session.user.isOAuth === true
+                      }
                       {...field}
                     />
                   </FormControl>
@@ -158,15 +176,20 @@ export default function SettingsCard(session: SettingsForm) {
                     Enable two factor authentication for your account
                   </FormDescription>
                   <FormControl>
-                    <Switch disabled={status === "executing"} />
+                    <Switch
+                      disabled={
+                        status === "executing" ||
+                        session.session.user.isOAuth === true
+                      }
+                    />
                   </FormControl>
 
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <FormError />
-            <FormSuccess />
+            <FormError message={error} />
+            <FormSuccess message={success} />
             <Button
               type="submit"
               disabled={status === "executing" || avatarUploading}
