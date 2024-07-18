@@ -6,7 +6,7 @@ import { db } from "@/server";
 import Credentials from "@auth/core/providers/credentials";
 import { LoginSchema } from "@/types/login-schema";
 import { eq } from "drizzle-orm";
-import { users } from "./schema";
+import { accounts, users } from "./schema";
 import bcrypt from "bcrypt";
 
 export const { handlers, signOut, signIn, auth } = NextAuth({
@@ -31,16 +31,13 @@ export const { handlers, signOut, signIn, auth } = NextAuth({
       return session;
     },
     async jwt({ token }) {
-      console.log("token", token);
       if (!token.sub) return token;
-
       const existingUser = await db.query.users.findFirst({
         where: eq(users.id, token.sub),
       });
-
       if (!existingUser) return token;
-      const existingAccount = db.query.accounts.findFirst({
-        where: eq(users.id, existingUser.id),
+      const existingAccount = await db.query.accounts.findFirst({
+        where: eq(accounts.userId, existingUser.id),
       });
       token.isOAuth = !!existingAccount;
       token.name = existingUser.name;

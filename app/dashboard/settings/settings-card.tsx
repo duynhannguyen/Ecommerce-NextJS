@@ -36,7 +36,6 @@ type SettingsForm = {
 };
 
 export default function SettingsCard(session: SettingsForm) {
-  console.log("session", session);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [avatarUploading, setAvatarUploading] = useState(false);
@@ -44,8 +43,8 @@ export default function SettingsCard(session: SettingsForm) {
   const form = useForm<z.infer<typeof SettingSchema>>({
     resolver: zodResolver(SettingSchema),
     defaultValues: {
-      password: undefined,
-      newPassword: undefined,
+      password: "",
+      newPassword: "",
       name: session.session.user.name || undefined,
       email: session.session.user.email || undefined,
       image: session.session.user.image || undefined,
@@ -63,6 +62,7 @@ export default function SettingsCard(session: SettingsForm) {
   });
 
   const onSubmit = (values: z.infer<typeof SettingSchema>) => {
+    console.log("values", values);
     execute(values);
   };
   return (
@@ -125,8 +125,8 @@ export default function SettingsCard(session: SettingsForm) {
               )}
             />
             <FormField
-              control={form.control}
               name="password"
+              control={form.control}
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Password</FormLabel>
@@ -181,6 +181,8 @@ export default function SettingsCard(session: SettingsForm) {
                         status === "executing" ||
                         session.session.user.isOAuth === true
                       }
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
                     />
                   </FormControl>
 

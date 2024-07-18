@@ -19,6 +19,20 @@ export const sendPasswordResetEmail = async (email: string, token: string) => {
   if (data) return data;
 };
 
+export const sendTwoFactorTokenEmail = async (email: string, token: string) => {
+  const { data, error } = await resend.emails.send({
+    from: "onboarding@resend.dev",
+    to: email,
+    subject: "Buyme - Your 2 Factor Token",
+    html: `<p>Your Confirmation Code: ${token} </p>`,
+  });
+
+  if (error) {
+    return console.log(error);
+  }
+  if (data) return data;
+};
+
 const sendVerificationEmail = async (email: string, token: string) => {
   const confirmLink = `${domain}/auth/new-verification?email=${email}`;
   const { data, error } = await resend.emails.send({

@@ -65,9 +65,6 @@ const RegisterForm = () => {
                   <FormControl>
                     <Input placeholder="username" type="text" {...field} />
                   </FormControl>
-                  {/* <FormDescription>
-                        This is your public display name.
-                      </FormDescription> */}
                   <FormMessage />
                 </FormItem>
               )}
@@ -86,9 +83,6 @@ const RegisterForm = () => {
                       {...field}
                     />
                   </FormControl>
-                  {/* <FormDescription>
-                        This is your public display name.
-                      </FormDescription> */}
                   <FormMessage />
                 </FormItem>
               )}
