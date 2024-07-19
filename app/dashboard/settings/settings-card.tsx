@@ -7,6 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { CldUploadWidget } from "next-cloudinary";
 import { Session } from "next-auth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -39,12 +40,13 @@ export default function SettingsCard(session: SettingsForm) {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [avatarUploading, setAvatarUploading] = useState(false);
-  console.log("session", session.session);
+  // console.log("avatarUploading", avatarUploading);
+  // console.log("session", session.session);
   const form = useForm<z.infer<typeof SettingSchema>>({
     resolver: zodResolver(SettingSchema),
     defaultValues: {
-      password: "",
-      newPassword: "",
+      password: undefined,
+      newPassword: undefined,
       name: session.session.user.name || undefined,
       email: session.session.user.email || undefined,
       image: session.session.user.image || undefined,
@@ -62,9 +64,9 @@ export default function SettingsCard(session: SettingsForm) {
   });
 
   const onSubmit = (values: z.infer<typeof SettingSchema>) => {
-    console.log("values", values);
     execute(values);
   };
+
   return (
     <Card>
       <CardHeader>
@@ -117,7 +119,56 @@ export default function SettingsCard(session: SettingsForm) {
                     )}
                   </div>
                   <FormControl>
-                    <Input placeholder="User Image" type="hidden" {...field} />
+                    <CldUploadWidget
+                      uploadPreset={
+                        process.env.NEXT_PUBLIC_CLOUDINARY_PRESET_NAME
+                      }
+                      options={{
+                        multiple: true,
+                        resourceType: "image",
+                        styles: {
+                          palette: {
+                            window: "#6d28d9",
+                            windowBorder: "#0E2F5A",
+                            tabIcon: "#FFF",
+                            menuIcons: "#0E2F5A",
+                            textDark: "#000000",
+                            textLight: "#FFFFFF",
+                            link: "#0078FF",
+                            action: "#6d28d9",
+                            inactiveTabIcon: "#0E2F5A",
+                            error: "#F44235",
+                            inProgress: "#0078FF",
+                            complete: "#20B832",
+                            sourceBg: "#E4EBF1",
+                          },
+                          frame: {
+                            background: "#000000",
+                          },
+                        },
+                      }}
+                      onSuccess={(result) => {
+                        if (result) {
+                          setAvatarUploading(false);
+                          form.setValue("image", result.info.secure_url!);
+                          console.log("result", result.info);
+                        }
+                      }}
+                      onOpen={() => {
+                        setAvatarUploading(true);
+                      }}
+                      onClose={() => {
+                        setAvatarUploading(false);
+                      }}
+                    >
+                      {({ open, isLoading }) => {
+                        return (
+                          <Button type="button" onClick={() => open()}>
+                            {isLoading ? "Loading" : "Change Avatar"}
+                          </Button>
+                        );
+                      }}
+                    </CldUploadWidget>
                   </FormControl>
 
                   <FormMessage />
