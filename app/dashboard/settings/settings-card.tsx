@@ -148,7 +148,10 @@ export default function SettingsCard(session: SettingsForm) {
                       onSuccess={(result) => {
                         if (result) {
                           setAvatarUploading(false);
-                          form.setValue("image", result.info.secure_url!);
+                          form.setValue(
+                            "image",
+                            result?.info?.secure_url as string
+                          );
                           console.log("result", result.info);
                         }
                       }}
