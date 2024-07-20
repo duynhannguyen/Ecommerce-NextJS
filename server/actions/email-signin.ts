@@ -4,7 +4,7 @@ import { createSafeActionClient } from "next-safe-action";
 import { db } from "@/server/index";
 import { eq } from "drizzle-orm";
 import { twoFactorTokens, users } from "../schema";
-
+import { Resend } from "resend";
 import generateEmailVerificationToken, {
   generateTwoFactorToken,
   getTwoFactorTokenByEmail,

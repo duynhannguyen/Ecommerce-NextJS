@@ -110,15 +110,13 @@ export default function SettingsCard(session: SettingsForm) {
                     )}
                     {form.getValues("image") && (
                       <Image
-                        className="rounded-full"
+                        className="rounded-full "
                         src={form.getValues("image")!}
                         width={42}
                         height={42}
                         alt="User Image"
                       />
                     )}
-                  </div>
-                  <FormControl>
                     <CldUploadWidget
                       uploadPreset={
                         process.env.NEXT_PUBLIC_CLOUDINARY_PRESET_NAME
@@ -169,7 +167,7 @@ export default function SettingsCard(session: SettingsForm) {
                         );
                       }}
                     </CldUploadWidget>
-                  </FormControl>
+                  </div>
 
                   <FormMessage />
                 </FormItem>
