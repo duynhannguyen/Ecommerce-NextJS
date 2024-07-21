@@ -36,6 +36,13 @@
       "when": 1721328189266,
       "tag": "0004_new_rhodey",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1721558954803,
+      "tag": "0005_solid_jack_power",
+      "breakpoints": true
     }
   ]
 }

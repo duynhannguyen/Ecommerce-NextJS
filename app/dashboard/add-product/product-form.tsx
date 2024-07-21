@@ -24,6 +24,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { DollarSign } from "lucide-react";
+import Tiptap from "./tiptap";
 export default function ProductForm() {
   const form = useForm<z.infer<typeof ProductSchema>>({
     resolver: zodResolver(ProductSchema),
@@ -65,7 +66,7 @@ export default function ProductForm() {
                 <FormItem>
                   <FormLabel>Description </FormLabel>
                   <FormControl>
-                    {/* <Input placeholder="nhan" {...field} /> */}
+                    <Tiptap val={field.value} />
                   </FormControl>
 
                   <FormMessage />
@@ -80,10 +81,6 @@ export default function ProductForm() {
                   <FormLabel>Product Price </FormLabel>
                   <FormControl>
                     <div className=" flex items-center gap-2  ">
-                      {/* <DollarSign
-                        size={36}
-                        className="p-2 bg-muted rounded-md "
-                      /> */}
                       <span className="p-2 bg-muted rounded-md text-lg ">
                         &#8363;
                       </span>
