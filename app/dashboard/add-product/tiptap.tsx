@@ -30,11 +30,12 @@ const Tiptap = ({ val }: { val: string }) => {
     ],
     onUpdate: ({ editor }) => {
       const content = editor.getHTML();
-      setValue("description", content, {
+      setValue("descriptions", content, {
         shouldValidate: true,
         shouldDirty: true,
       });
     },
+    immediatelyRender: false,
     editorProps: {
       attributes: {
         class:

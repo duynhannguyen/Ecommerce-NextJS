@@ -23,8 +23,10 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { DollarSign } from "lucide-react";
 import Tiptap from "./tiptap";
+import { useAction } from "next-safe-action/hooks";
+import { createProduct } from "@/server/actions/create-product";
+import { useState } from "react";
 export default function ProductForm() {
   const form = useForm<z.infer<typeof ProductSchema>>({
     resolver: zodResolver(ProductSchema),
@@ -34,8 +36,17 @@ export default function ProductForm() {
       price: 0,
     },
   });
-
-  const onSubmit = () => {};
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const { execute, status } = useAction(createProduct, {
+    onSuccess(data) {
+      if (data.data?.success) setSuccess(data.data.success);
+      if (data.data?.error) setError(data.data.error);
+    },
+  });
+  const onSubmit = (value: z.infer<typeof ProductSchema>) => {
+    execute(value);
+  };
   return (
     <Card>
       <CardHeader>
@@ -52,7 +63,7 @@ export default function ProductForm() {
                 <FormItem className="p-2">
                   <FormLabel>Product Title </FormLabel>
                   <FormControl>
-                    <Input placeholder="nhan" {...field} />
+                    <Input placeholder="Enter Product Name" {...field} />
                   </FormControl>
 
                   <FormMessage />
@@ -98,7 +109,15 @@ export default function ProductForm() {
                 </FormItem>
               )}
             />
-            <Button className="w-full" type="submit">
+            <Button
+              disabled={
+                status === "executing" ||
+                !form.formState.isValid ||
+                !form.formState.isDirty
+              }
+              className="w-full"
+              type="submit"
+            >
               Submit
             </Button>
           </form>
