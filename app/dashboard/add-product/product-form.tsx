@@ -115,8 +115,7 @@ export default function ProductForm() {
                         {...field}
                         onBlur={(e) => {
                           const price = parseInt(
-                            e.target.value.replace(/\./g, ""),
-                            10
+                            e.target.value.replace(/\./g, "")
                           );
 
                           if (isNaN(price)) {
@@ -131,10 +130,10 @@ export default function ProductForm() {
                             );
                             return;
                           }
-                          const newPrice = new Intl.NumberFormat("vi", {
-                            style: "decimal",
-                            currency: "VND",
-                          }).format(price);
+                          const newPrice = new Intl.NumberFormat(
+                            "vi",
+                            {}
+                          ).format(price);
 
                           form.setValue("price", newPrice, {
                             shouldDirty: true,
