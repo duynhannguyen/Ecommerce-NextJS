@@ -27,6 +27,9 @@ import Tiptap from "./tiptap";
 import { useAction } from "next-safe-action/hooks";
 import { createProduct } from "@/server/actions/create-product";
 import { useState } from "react";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+
 export default function ProductForm() {
   const form = useForm<z.infer<typeof ProductSchema>>({
     resolver: zodResolver(ProductSchema),
@@ -36,12 +39,21 @@ export default function ProductForm() {
       price: 0,
     },
   });
+  const router = useRouter();
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const { execute, status } = useAction(createProduct, {
     onSuccess(data) {
-      if (data.data?.success) setSuccess(data.data.success);
-      if (data.data?.error) setError(data.data.error);
+      if (data.data?.success) {
+        router.push("/dashboard/products");
+        toast.success(data.data.success);
+      }
+      if (data.data?.error) {
+        toast.error(data.data.error);
+      }
+    },
+    onExecute() {
+      toast.loading("Creating Product");
     },
   });
   const onSubmit = (value: z.infer<typeof ProductSchema>) => {
