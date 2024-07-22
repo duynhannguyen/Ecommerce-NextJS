@@ -12,6 +12,12 @@ const action = createSafeActionClient();
 export const createProduct = action
   .schema(ProductSchema)
   .action(async ({ parsedInput: { descriptions, id, title, price } }) => {
+    const Numberprice = parseInt(price.replace(/\./g, ""), 10);
+
+    if (isNaN(Numberprice) || Numberprice < 0) {
+      return { error: "Invalid Price" };
+    }
+
     try {
       if (id) {
         const currentProduct = await db.query.Product.findFirst({
@@ -20,7 +26,7 @@ export const createProduct = action
         if (!currentProduct) return { error: "Product not found!" };
         const updateProduct = await db
           .update(Product)
-          .set({ description: descriptions, title, price })
+          .set({ description: descriptions, title, price: Numberprice })
           .where(eq(Product.id, id))
           .returning();
         revalidatePath("/dashboard/add-product");
@@ -34,7 +40,7 @@ export const createProduct = action
           .values({
             title,
             description: descriptions,
-            price,
+            price: Numberprice,
           })
           .returning();
         revalidatePath("/dashboard/add-product");

@@ -26,9 +26,11 @@ import { Button } from "@/components/ui/button";
 import Tiptap from "./tiptap";
 import { useAction } from "next-safe-action/hooks";
 import { createProduct } from "@/server/actions/create-product";
-import { useState } from "react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { ChangeEvent } from "react";
+import { formatNumber } from "./thousandFormat";
+// import { ThousandFormat } from "./thousandFormat";
 
 export default function ProductForm() {
   const form = useForm<z.infer<typeof ProductSchema>>({
@@ -36,12 +38,10 @@ export default function ProductForm() {
     defaultValues: {
       title: "",
       descriptions: "",
-      price: 0,
+      price: "",
     },
   });
   const router = useRouter();
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
   const { execute, status } = useAction(createProduct, {
     onSuccess(data) {
       if (data.data?.success) {
@@ -57,6 +57,7 @@ export default function ProductForm() {
     },
   });
   const onSubmit = (value: z.infer<typeof ProductSchema>) => {
+    console.log("value", value);
     execute(value);
   };
   return (
@@ -108,10 +109,38 @@ export default function ProductForm() {
                         &#8363;
                       </span>
                       <Input
-                        type="number"
+                        type="text"
                         placeholder="Your price in VND"
-                        step={1000}
+                        step={5000}
                         {...field}
+                        onBlur={(e) => {
+                          const price = parseInt(
+                            e.target.value.replace(/\./g, ""),
+                            10
+                          );
+
+                          if (isNaN(price)) {
+                            toast.error("Price must be a number");
+                            form.resetField("price");
+                            return;
+                          }
+                          if (price < 0) {
+                            form.resetField("price");
+                            toast.error(
+                              "Price must be a positive number number"
+                            );
+                            return;
+                          }
+                          const newPrice = new Intl.NumberFormat("vi", {
+                            style: "decimal",
+                            currency: "VND",
+                          }).format(price);
+
+                          form.setValue("price", newPrice, {
+                            shouldDirty: true,
+                            shouldValidate: true,
+                          });
+                        }}
                         min={0}
                       />
                     </div>
