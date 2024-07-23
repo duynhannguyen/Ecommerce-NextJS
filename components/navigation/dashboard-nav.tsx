@@ -11,7 +11,7 @@ export const DashBoardNav = ({
 }) => {
   const pathName = usePathname();
   return (
-    <nav className="py-2 overflow-auto">
+    <nav className="py-2 overflow-auto mb-4 ">
       <ul className="flex gap-6 text-xs font-bold  ">
         <AnimatePresence>
           {allLinks.map((links) => (
