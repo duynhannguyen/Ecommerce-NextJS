@@ -1,3 +1,4 @@
+import { relations } from "drizzle-orm";
 import {
   boolean,
   integer,
@@ -141,3 +142,67 @@ export const Product = pgTable("product", {
   created: timestamp("created").defaultNow(),
   price: real("price").notNull(),
 });
+
+export const productVariants = pgTable("productVariants", {
+  id: serial("id").primaryKey(),
+  color: text("color").notNull(),
+  productType: text("productType").notNull(),
+  updated: timestamp("updated").defaultNow(),
+  productId: serial("productId")
+    .notNull()
+    .references(() => Product.id, { onDelete: "cascade" }),
+});
+
+export const variantsImages = pgTable("variantsImages", {
+  id: serial("id").primaryKey(),
+  url: text("url").notNull(),
+  size: real("size").notNull(),
+  name: text("name").notNull(),
+  order: real("order").notNull(),
+  variantId: serial("variantId")
+    .notNull()
+    .references(() => productVariants.id, {
+      onDelete: "cascade",
+    }),
+});
+
+export const variantsTags = pgTable("variantsTags", {
+  id: serial("id").primaryKey(),
+  tag: text("tag").notNull(),
+  variantId: serial("variantId")
+    .notNull()
+    .references(() => productVariants.id, {
+      onDelete: "cascade",
+    }),
+});
+
+export const productRelations = relations(Product, ({ many }) => ({
+  productVariants: many(productVariants, { relationName: "productVariants" }),
+}));
+export const productVariantsRelation = relations(
+  productVariants,
+  ({ one, many }) => ({
+    product: one(Product, {
+      fields: [productVariants.productId],
+      references: [Product.id],
+      relationName: "productVariants",
+    }),
+    variantsImage: many(variantsImages, { relationName: "variantsImages" }),
+    variantsTags: many(variantsTags, { relationName: "variantsTags" }),
+  })
+);
+
+export const variantTagsRelations = relations(variantsTags, ({ one }) => ({
+  productVariant: one(productVariants, {
+    fields: [variantsTags.variantId],
+    references: [productVariants.id],
+    relationName: "variantsTags",
+  }),
+}));
+export const variantsImagesRelations = relations(variantsImages, ({ one }) => ({
+  productVariants: one(productVariants, {
+    fields: [variantsImages.variantId],
+    references: [productVariants.id],
+    relationName: "variantsImages",
+  }),
+}));
