@@ -27,9 +27,11 @@ import Tiptap from "./tiptap";
 import { useAction } from "next-safe-action/hooks";
 import { createProduct } from "@/server/actions/create-product";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
-import { ChangeEvent } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { ChangeEvent, useEffect } from "react";
 import { formatNumber } from "./thousandFormat";
+import { getProduct } from "./get-product";
+import { error } from "console";
 // import { ThousandFormat } from "./thousandFormat";
 
 export default function ProductForm() {
@@ -42,6 +44,32 @@ export default function ProductForm() {
     },
   });
   const router = useRouter();
+  const searchParam = useSearchParams();
+  const editMode = searchParam.get("id");
+  const checkProduct = async (id: number) => {
+    if (editMode) {
+      const data = await getProduct(id);
+      if (data.error) {
+        toast.error(data.error);
+        router.push("/dashboard/products");
+        return;
+      }
+      if (data.success) {
+        const id = parseInt(editMode);
+        const newPrice = new Intl.NumberFormat("vi", {});
+        form.setValue("title", data.success.title);
+        form.setValue("descriptions", data.success.description);
+        form.setValue("price", newPrice.format(data.success.price));
+        form.setValue("id", id);
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (editMode) {
+      checkProduct(parseInt(editMode));
+    }
+  }, []);
   const { execute, status } = useAction(createProduct, {
     onSuccess(data) {
       if (data.data?.success) {
@@ -53,7 +81,12 @@ export default function ProductForm() {
       }
     },
     onExecute() {
-      toast.loading("Creating Product");
+      if (editMode) {
+        toast.loading("Updating product");
+      }
+      if (!editMode) {
+        toast.loading("Creating product");
+      }
     },
   });
   const onSubmit = (value: z.infer<typeof ProductSchema>) => {
@@ -63,8 +96,12 @@ export default function ProductForm() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Card Title</CardTitle>
-        <CardDescription>Card Description</CardDescription>
+        <CardTitle>{editMode ? "Edit Product" : "Create Product"}</CardTitle>
+        <CardDescription>
+          {editMode
+            ? "Make changes to the product 🖍️ "
+            : "🎊 Add a brand new product 🎊 "}
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <Form {...form}>
@@ -114,6 +151,9 @@ export default function ProductForm() {
                         step={5000}
                         {...field}
                         onBlur={(e) => {
+                          if (e.target.value === "") {
+                            return;
+                          }
                           const price = parseInt(
                             e.target.value.replace(/\./g, "")
                           );
@@ -158,14 +198,11 @@ export default function ProductForm() {
               className="w-full"
               type="submit"
             >
-              Submit
+              {editMode ? " Save Changes " : "Create Product "}
             </Button>
           </form>
         </Form>
       </CardContent>
-      <CardFooter>
-        <p>Card Footer</p>
-      </CardFooter>
     </Card>
   );
 }

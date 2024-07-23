@@ -29,7 +29,7 @@ export const createProduct = action
           .set({ description: descriptions, title, price: Numberprice })
           .where(eq(Product.id, id))
           .returning();
-        revalidatePath("/dashboard/add-product");
+        revalidatePath("/dashboard/products");
         return {
           success: `Product ${updateProduct[0].title} has been updated `,
         };
@@ -43,8 +43,10 @@ export const createProduct = action
             price: Numberprice,
           })
           .returning();
-        revalidatePath("/dashboard/add-product");
-        return { success: `Product ${newProduct[0].title} has been created ` };
+        revalidatePath("/dashboard/products");
+        return {
+          success: `Product ${newProduct[0].title} has been created `,
+        };
       }
     } catch (error) {
       return { error: JSON.stringify(error) };
