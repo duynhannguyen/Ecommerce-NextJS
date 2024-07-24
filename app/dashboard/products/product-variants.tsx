@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import * as z from "zod";
+import InputTags from "./input-tags";
 const ProductVariant = ({
   editMode,
   productId,
@@ -103,7 +104,7 @@ const ProductVariant = ({
                 <FormItem>
                   <FormLabel>Variant Tags</FormLabel>
                   <FormControl>
-                    <InputTags />
+                    <InputTags {...field} onChange={(e) => field.onChange(e)} />
                   </FormControl>
 
                   <FormMessage />
@@ -116,9 +117,7 @@ const ProductVariant = ({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Variant Images</FormLabel>
-                  <FormControl>
-                    <InputTags />
-                  </FormControl>
+                  <FormControl>{/* <InputTags /> */}</FormControl>
 
                   <FormMessage />
                 </FormItem>
