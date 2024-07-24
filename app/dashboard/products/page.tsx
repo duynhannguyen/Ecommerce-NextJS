@@ -4,6 +4,9 @@ import { DataTable } from "./data-table";
 import { columns } from "./columns";
 const Products = async () => {
   const products = await db.query.Product.findMany({
+    with: {
+      productVariants: { with: { variantsImage: true, variantsTags: true } },
+    },
     orderBy: (product, { desc }) => [desc(product.id)],
   });
   if (!products) throw new Error("No products found");
