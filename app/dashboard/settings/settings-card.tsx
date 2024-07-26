@@ -40,8 +40,7 @@ export default function SettingsCard(session: SettingsForm) {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [avatarUploading, setAvatarUploading] = useState(false);
-  // console.log("avatarUploading", avatarUploading);
-  // console.log("session", session.session);
+
   const form = useForm<z.infer<typeof SettingSchema>>({
     resolver: zodResolver(SettingSchema),
     defaultValues: {
@@ -119,7 +118,7 @@ export default function SettingsCard(session: SettingsForm) {
                     )}
                     <CldUploadWidget
                       uploadPreset={
-                        process.env.NEXT_PUBLIC_CLOUDINARY_PRESET_NAME
+                        process.env.NEXT_PUBLIC_CLOUDINARY_PRESET_AVATAR
                       }
                       options={{
                         multiple: true,

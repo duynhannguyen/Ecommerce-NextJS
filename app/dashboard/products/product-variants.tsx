@@ -26,6 +26,8 @@ import {
 import { Input } from "@/components/ui/input";
 import * as z from "zod";
 import InputTags from "./input-tags";
+import VariantsImages from "./variants-image";
+import UploadButton from "@/components/upload/upload-button";
 const ProductVariant = ({
   editMode,
   productId,
@@ -54,8 +56,8 @@ const ProductVariant = ({
 
   return (
     <Dialog>
-      <DialogTrigger>{children}</DialogTrigger>
-      <DialogContent>
+      <DialogTrigger asChild>{children}</DialogTrigger>
+      <DialogContent className=" z-[2]">
         <DialogHeader>
           <DialogTitle>
             {editMode ? "Edit Mode" : "Create"} your variant{" "}
@@ -106,27 +108,18 @@ const ProductVariant = ({
                   <FormControl>
                     <InputTags {...field} onChange={(e) => field.onChange(e)} />
                   </FormControl>
-
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <FormField
-              control={form.control}
-              name="variantImages"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Variant Images</FormLabel>
-                  <FormControl>{/* <InputTags /> */}</FormControl>
-
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <div className="z-[60]">
+              {/* <VariantsImages /> */}
+              <UploadButton />
+            </div>
             {editMode && variant && (
               <Button type="button"> Delete Variant </Button>
             )}
-            <Button type="submit">
+            <Button className="relative" type="submit">
               {editMode ? "Update Variant" : "Create variant"}
             </Button>
           </form>
