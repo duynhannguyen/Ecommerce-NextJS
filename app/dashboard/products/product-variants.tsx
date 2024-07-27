@@ -8,7 +8,6 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { ProductVariantsImagesTags } from "@/lib/infer-type";
-import { variantsImages } from "@/server/schema";
 import { VariantSchema } from "@/types/variant-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useAction } from "next-safe-action/hooks";
