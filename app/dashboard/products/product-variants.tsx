@@ -16,7 +16,6 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -26,7 +25,6 @@ import { Input } from "@/components/ui/input";
 import * as z from "zod";
 import InputTags from "./input-tags";
 import VariantsImages from "./variants-image";
-import UploadButton from "@/components/upload/upload-button";
 const ProductVariant = ({
   editMode,
   productId,
@@ -111,10 +109,9 @@ const ProductVariant = ({
                 </FormItem>
               )}
             />
-            <div className="z-[60]">
-              {/* <VariantsImages /> */}
-              <UploadButton />
-            </div>
+
+            <VariantsImages />
+
             {editMode && variant && (
               <Button type="button"> Delete Variant </Button>
             )}

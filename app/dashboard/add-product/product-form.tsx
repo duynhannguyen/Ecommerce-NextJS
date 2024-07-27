@@ -5,7 +5,6 @@ import { ProductSchema } from "@/types/product-shema";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -15,7 +14,6 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -28,11 +26,8 @@ import { useAction } from "next-safe-action/hooks";
 import { createProduct } from "@/server/actions/create-product";
 import { toast } from "sonner";
 import { useRouter, useSearchParams } from "next/navigation";
-import { ChangeEvent, useEffect } from "react";
-import { formatNumber } from "./thousandFormat";
+import { useEffect } from "react";
 import { getProduct } from "./get-product";
-import { error } from "console";
-// import { ThousandFormat } from "./thousandFormat";
 
 export default function ProductForm() {
   const form = useForm<z.infer<typeof ProductSchema>>({

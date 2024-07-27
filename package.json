@@ -30,11 +30,11 @@
     "@tiptap/react": "^2.5.4",
     "@tiptap/starter-kit": "^2.5.4",
     "@types/bcrypt": "^5.0.2",
+    "@uploadthing/react": "^6.7.2",
     "axios": "^1.7.2",
     "bcrypt": "^5.1.1",
     "bg": "^1.0.0",
     "class-variance-authority": "^0.7.0",
-    "cloudinary": "^2.3.0",
     "clsx": "^2.1.1",
     "dotenv": "^16.4.5",
     "drizzle-orm": "^0.31.2",
@@ -54,6 +54,7 @@
     "sonner": "^1.5.0",
     "tailwind-merge": "^2.4.0",
     "tailwindcss-animate": "^1.0.7",
+    "uploadthing": "^6.13.2",
     "zod": "^3.23.8"
   },
   "devDependencies": {

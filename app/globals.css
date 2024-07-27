@@ -68,3 +68,7 @@ body {
     --chart-5: ;
   }
 }
+
+[data-ut-element="button"][data-state="uploading"]::after {
+  @apply bg-primary/50;
+}

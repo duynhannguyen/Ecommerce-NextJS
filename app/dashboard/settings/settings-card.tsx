@@ -3,11 +3,9 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { CldUploadWidget } from "next-cloudinary";
 import { Session } from "next-auth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -31,6 +29,7 @@ import FormSuccess from "@/components/auth/form-success";
 import { useState } from "react";
 import { useAction } from "next-safe-action/hooks";
 import { settings } from "@/server/actions/settings";
+import { UploadButton } from "@/app/api/uploadthing/upload";
 
 type SettingsForm = {
   session: Session;
@@ -116,59 +115,32 @@ export default function SettingsCard(session: SettingsForm) {
                         alt="User Image"
                       />
                     )}
-                    <CldUploadWidget
-                      uploadPreset={
-                        process.env.NEXT_PUBLIC_CLOUDINARY_PRESET_AVATAR
-                      }
-                      options={{
-                        multiple: true,
-                        resourceType: "image",
-                        styles: {
-                          palette: {
-                            window: "#6d28d9",
-                            windowBorder: "#0E2F5A",
-                            tabIcon: "#FFF",
-                            menuIcons: "#0E2F5A",
-                            textDark: "#000000",
-                            textLight: "#FFFFFF",
-                            link: "#0078FF",
-                            action: "#6d28d9",
-                            inactiveTabIcon: "#0E2F5A",
-                            error: "#F44235",
-                            inProgress: "#0078FF",
-                            complete: "#20B832",
-                            sourceBg: "#E4EBF1",
-                          },
-                          frame: {
-                            background: "#000000",
-                          },
+                    <UploadButton
+                      className=" scale-75 ut-button:ring-primary ut-button:bg-primary/75 hover:ut:button:bg-primary/100 ut:button:transition-all ut-button:duration-500 ut-label:hidden ut-allowed-content:hidden"
+                      endpoint="avatarUploader"
+                      content={{
+                        button({ ready }) {
+                          if (ready) return <div> Change Avatar </div>;
+                          return <div> Uploading... </div>;
                         },
                       }}
-                      onSuccess={(result) => {
-                        if (result) {
-                          setAvatarUploading(false);
-                          form.setValue(
-                            "image",
-                            result?.info?.secure_url as string
-                          );
-                          console.log("result", result.info);
-                        }
-                      }}
-                      onOpen={() => {
+                      onUploadBegin={() => {
                         setAvatarUploading(true);
                       }}
-                      onClose={() => {
+                      onUploadError={(error) => {
+                        form.setError("image", {
+                          type: "validate",
+                          message: error.message,
+                        });
                         setAvatarUploading(false);
+                        return;
                       }}
-                    >
-                      {({ open, isLoading }) => {
-                        return (
-                          <Button type="button" onClick={() => open()}>
-                            {isLoading ? "Loading" : "Change Avatar"}
-                          </Button>
-                        );
+                      onClientUploadComplete={(res) => {
+                        form.setValue("image", res[0].url);
+                        setAvatarUploading(false);
+                        return;
                       }}
-                    </CldUploadWidget>
+                    />
                   </div>
 
                   <FormMessage />
