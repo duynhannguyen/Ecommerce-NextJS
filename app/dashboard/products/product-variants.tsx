@@ -25,7 +25,7 @@ import { Input } from "@/components/ui/input";
 import * as z from "zod";
 import InputTags from "./input-tags";
 import VariantsImages from "./variants-image";
-const ProductVariant = ({
+export const ProductVariant = ({
   editMode,
   productId,
   variant,
@@ -54,7 +54,7 @@ const ProductVariant = ({
   return (
     <Dialog>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className=" z-[2]">
+      <DialogContent className=" lg:max-w-screen-lg overflow-y-scroll max-h-[860px] rounded-md ">
         <DialogHeader>
           <DialogTitle>
             {editMode ? "Edit Mode" : "Create"} your variant{" "}
