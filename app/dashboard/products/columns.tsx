@@ -8,8 +8,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import Image from "next/image";
@@ -100,8 +98,9 @@ export const columns: ColumnDef<ProductColumn>[] = [
     header: "VARIANTS",
     cell: ({ row }) => {
       const variants = row.getValue("variants") as ProductVariantsImagesTags[];
+
       return (
-        <div className="">
+        <div className="flex gap-2">
           {variants.map((variant) => (
             <div key={variant.id}>
               <TooltipProvider>
@@ -115,7 +114,7 @@ export const columns: ColumnDef<ProductColumn>[] = [
                       <div
                         className="w-5 h-5 rounded-full"
                         key={variant.id}
-                        style={{ background: variant.color }}
+                        style={{ background: variant.color, cursor: "pointer" }}
                       ></div>
                     </ProductVariant>
                   </TooltipTrigger>

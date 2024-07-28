@@ -23,8 +23,13 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import * as z from "zod";
-import InputTags from "./input-tags";
+import { InputTags } from "./input-tags";
 import VariantsImages from "./variants-image";
+import { createVariant } from "@/server/actions/create-variant";
+import { toast } from "sonner";
+import { Viaoda_Libre } from "next/font/google";
+import { url } from "inspector";
+import { useEffect, useState } from "react";
 export const ProductVariant = ({
   editMode,
   productId,
@@ -48,13 +53,59 @@ export const ProductVariant = ({
       productType: "Sach Lich Su",
     },
   });
+  const [open, setOpen] = useState(false);
+  const setEdit = () => {
+    if (!editMode) {
+      form.reset();
+      return;
+    }
+    if (editMode && variant) {
+      form.setValue("editMode", true),
+        form.setValue("id", variant.id),
+        form.setValue("productId", variant.productId),
+        form.setValue("color", variant.color),
+        form.setValue("productType", variant.productType),
+        form.setValue(
+          "tag",
+          variant.variantsTags.map((tag) => tag.tag)
+        ),
+        form.setValue(
+          "variantImages",
+          variant.variantsImage.map((img) => ({
+            name: img.name,
+            size: img.size,
+            url: img.url,
+          }))
+        );
+    }
+  };
 
-  const onSubmit = () => {};
+  useEffect(() => {
+    setEdit();
+  }, []);
+
+  const { execute, status } = useAction(createVariant, {
+    onExecute() {
+      toast.loading("Creating variant", { duration: 500 });
+      setOpen(false);
+    },
+    onSuccess(data) {
+      if (data.data?.error) {
+        toast.error(data.data.error);
+      }
+      if (data.data?.success) {
+        toast.success(data.data.success);
+      }
+    },
+  });
+  const onSubmit = (values: z.infer<typeof VariantSchema>) => {
+    execute(values);
+  };
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className=" lg:max-w-screen-lg overflow-y-scroll max-h-[860px] rounded-md ">
+      <DialogContent className=" lg:max-w-screen-lg overflow-y-scroll max-h-[860px] rounded-md  ">
         <DialogHeader>
           <DialogTitle>
             {editMode ? "Edit Mode" : "Create"} your variant{" "}
@@ -111,13 +162,17 @@ export const ProductVariant = ({
             />
 
             <VariantsImages />
-
-            {editMode && variant && (
-              <Button type="button"> Delete Variant </Button>
-            )}
-            <Button className="relative" type="submit">
-              {editMode ? "Update Variant" : "Create variant"}
-            </Button>
+            <div className="flex gap-4 items-center justify-center">
+              {editMode && variant && (
+                <Button variant={"destructive"} type="button">
+                  {" "}
+                  Delete Variant{" "}
+                </Button>
+              )}
+              <Button className="relative" type="submit">
+                {editMode ? "Update Variant" : "Create variant"}
+              </Button>
+            </div>
           </form>
         </Form>
       </DialogContent>
