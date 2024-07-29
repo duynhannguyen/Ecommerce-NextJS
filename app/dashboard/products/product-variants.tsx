@@ -27,9 +27,8 @@ import { InputTags } from "./input-tags";
 import VariantsImages from "./variants-image";
 import { createVariant } from "@/server/actions/create-variant";
 import { toast } from "sonner";
-import { Viaoda_Libre } from "next/font/google";
-import { url } from "inspector";
 import { useEffect, useState } from "react";
+import { deleteVariant } from "@/server/actions/delete-variant";
 export const ProductVariant = ({
   editMode,
   productId,
@@ -98,6 +97,22 @@ export const ProductVariant = ({
       }
     },
   });
+
+  const variantAction = useAction(deleteVariant, {
+    onExecute() {
+      toast.loading("Deleting variant", { duration: 500 });
+      setOpen(false);
+    },
+    onSuccess(data) {
+      if (data.data?.error) {
+        toast.error(data.data.error);
+      }
+      if (data.data?.success) {
+        toast.success(data.data.success);
+      }
+    },
+  });
+
   const onSubmit = (values: z.infer<typeof VariantSchema>) => {
     execute(values);
   };
@@ -164,7 +179,14 @@ export const ProductVariant = ({
             <VariantsImages />
             <div className="flex gap-4 items-center justify-center">
               {editMode && variant && (
-                <Button variant={"destructive"} type="button">
+                <Button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    variantAction.execute({ id: variant.id });
+                  }}
+                  variant={"destructive"}
+                  type="button"
+                >
                   {" "}
                   Delete Variant{" "}
                 </Button>
