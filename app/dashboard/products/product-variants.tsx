@@ -180,6 +180,7 @@ export const ProductVariant = ({
             <div className="flex gap-4 items-center justify-center">
               {editMode && variant && (
                 <Button
+                  disabled={variantAction.status === "executing"}
                   onClick={(e) => {
                     e.preventDefault();
                     variantAction.execute({ id: variant.id });
@@ -191,7 +192,15 @@ export const ProductVariant = ({
                   Delete Variant{" "}
                 </Button>
               )}
-              <Button className="relative" type="submit">
+              <Button
+                disabled={
+                  status === "executing" ||
+                  !form.formState.isValid ||
+                  !form.formState.isDirty
+                }
+                className="relative"
+                type="submit"
+              >
                 {editMode ? "Update Variant" : "Create variant"}
               </Button>
             </div>
