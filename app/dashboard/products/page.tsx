@@ -5,7 +5,7 @@ import { columns } from "./columns";
 const Products = async () => {
   const products = await db.query.Product.findMany({
     with: {
-      productVariants: { with: { variantsImage: true, variantsTags: true } },
+      productVariants: { with: { variantsImages: true, variantsTags: true } },
     },
     orderBy: (product, { desc }) => [desc(product.id)],
   });
@@ -21,7 +21,7 @@ const Products = async () => {
         image: placeholder.src,
       };
     }
-    const image = product.productVariants[0].variantsImage[0].url;
+    const image = product.productVariants[0].variantsImages[0].url;
     return {
       id: product.id,
       title: product.title,

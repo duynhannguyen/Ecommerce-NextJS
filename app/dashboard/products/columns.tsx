@@ -23,6 +23,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { ProductVariant } from "./product-variants";
+import { formatPrice } from "@/lib/format-price";
 
 type ProductColumn = {
   title: string;
@@ -148,11 +149,8 @@ export const columns: ColumnDef<ProductColumn>[] = [
     header: "PRICE",
     cell: ({ row }) => {
       const prices = parseInt(row.getValue("price"));
-      const formatted = new Intl.NumberFormat("vi", {
-        currency: "VND",
-        style: "currency",
-      }).format(prices);
-      return <div className=" font-medium text-xs">{formatted}</div>;
+
+      return <div className=" font-medium text-xs">{formatPrice(prices)}</div>;
     },
   },
   {

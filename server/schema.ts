@@ -187,7 +187,7 @@ export const productVariantsRelation = relations(
       references: [Product.id],
       relationName: "productVariants",
     }),
-    variantsImage: many(variantsImages, { relationName: "variantsImages" }),
+    variantsImages: many(variantsImages, { relationName: "variantsImages" }),
     variantsTags: many(variantsTags, { relationName: "variantsTags" }),
   })
 );

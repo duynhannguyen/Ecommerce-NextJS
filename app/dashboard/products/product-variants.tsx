@@ -69,7 +69,7 @@ export const ProductVariant = forwardRef<HTMLDivElement, ProductVariantProps>(
           ),
           form.setValue(
             "variantImages",
-            variant.variantsImage.map((img) => ({
+            variant.variantsImages.map((img) => ({
               name: img.name,
               size: img.size,
               url: img.url,
