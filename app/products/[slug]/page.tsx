@@ -17,9 +17,9 @@ export async function generateStaticParams() {
   });
 
   if (data) {
-    const slugId = data.map((variant) => {
-      slug: variant.id.toString();
-    });
+    const slugId = data.map((variant) => ({
+      slug: variant.id.toString(),
+    }));
     return slugId;
   }
 
@@ -42,6 +42,7 @@ export default async function Page({ params }: { params: { slug: string } }) {
       },
     },
   });
+
   if (variant) {
     return (
       <main>

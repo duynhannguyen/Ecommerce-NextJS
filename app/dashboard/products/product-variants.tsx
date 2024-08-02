@@ -48,7 +48,7 @@ export const ProductVariant = forwardRef<HTMLDivElement, ProductVariantProps>(
         editMode,
         id: undefined,
         productId,
-        productType: "Sach Lich Su",
+        productType: "",
       },
     });
     const [open, setOpen] = useState(false);
