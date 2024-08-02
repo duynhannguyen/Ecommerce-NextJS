@@ -25,10 +25,14 @@ export default function ProductPick({
   const selectedColor = searchParams.get("type" || productType);
   return (
     <div
-      className={cn("w-8 h-8 rounded-full cursor-pointer")}
+      style={{ background: color }}
+      className={cn(
+        "w-8 h-8 rounded-full cursor-pointer transition-all duration-300 ease-in-out hover:opacity-75  ",
+        selectedColor === productType ? "opacity-100" : "opacity-50"
+      )}
       onClick={() =>
         router.push(
-          `/products/${id}&price=${price}&productId=${productId}&title=${title}&type=${productType}&image=${image}&color=${color}`,
+          `/products/${id}?id=${id}&productId=${productId}&price=${price}&title=${title}&type=${productType}&image=${image}`,
           { scroll: false }
         )
       }

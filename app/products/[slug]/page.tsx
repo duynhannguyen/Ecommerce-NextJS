@@ -63,9 +63,18 @@ export default async function Page({ params }: { params: { slug: string } }) {
               dangerouslySetInnerHTML={{ __html: variant.product.description }}
             ></div>
             <p className="text-secondary-foreground">Available Colors</p>
-            <div>
+            <div className="flex gap-4">
               {variant.product.productVariants.map((productVariant) => (
-                <ProductPick />
+                <ProductPick
+                  key={productVariant.id}
+                  id={productVariant.id}
+                  productId={productVariant.productId}
+                  productType={productVariant.productType}
+                  color={productVariant.color}
+                  image={productVariant.variantsImages[0]?.url}
+                  price={variant.product.price}
+                  title={variant.product.title}
+                />
               ))}
             </div>
           </div>
