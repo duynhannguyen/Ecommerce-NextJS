@@ -1,4 +1,5 @@
 import ProductPick from "@/components/products/product-pick";
+import { ProductShowCase } from "@/components/products/product-showcase";
 import ProductType from "@/components/products/product-type";
 import { Separator } from "@/components/ui/separator";
 import { formatPrice } from "@/lib/format-price";
@@ -46,24 +47,26 @@ export default async function Page({ params }: { params: { slug: string } }) {
   if (variant) {
     return (
       <main>
-        <section>
-          <div>
-            <h1>Images</h1>
+        <section className=" flex flex-col lg:flex-row gap-4 lg:gap-12 ">
+          <div className=" flex-1">
+            <ProductShowCase variants={variant.product.productVariants} />
           </div>
-          <div className="flex gap-2 flex-col flex-1 ">
-            <h2 className=""> {variant?.product.title} </h2>
+          <div className="flex flex-col flex-1 ">
+            <h2 className="text-2xl font-bold"> {variant?.product.title} </h2>
             <div>
               <ProductType variants={variant.product.productVariants} />
             </div>
-            <Separator />
-            <p className="text-2xl font-medium ">
+            <Separator className="my-2" />
+            <p className="text-2xl font-medium py-2  ">
               {" "}
               {formatPrice(variant.product.price)}{" "}
             </p>
             <div
               dangerouslySetInnerHTML={{ __html: variant.product.description }}
             ></div>
-            <p className="text-secondary-foreground">Available Colors</p>
+            <p className="text-secondary-foreground font-medium my-2 ">
+              Available Colors
+            </p>
             <div className="flex gap-4">
               {variant.product.productVariants.map((productVariant) => (
                 <ProductPick
