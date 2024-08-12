@@ -1,6 +1,7 @@
 import { relations } from "drizzle-orm";
 import {
   boolean,
+  index,
   integer,
   pgEnum,
   pgTable,
@@ -178,6 +179,7 @@ export const variantsTags = pgTable("variantsTags", {
 
 export const productRelations = relations(Product, ({ many }) => ({
   productVariants: many(productVariants, { relationName: "productVariants" }),
+  reviews: many(reviews, { relationName: "reviews" }),
 }));
 export const productVariantsRelation = relations(
   productVariants,
@@ -204,5 +206,46 @@ export const variantsImagesRelations = relations(variantsImages, ({ one }) => ({
     fields: [variantsImages.variantId],
     references: [productVariants.id],
     relationName: "variantsImages",
+  }),
+}));
+
+export const reviews = pgTable(
+  "reviews",
+  {
+    id: serial("id").primaryKey(),
+    rating: real("rating").notNull(),
+    userId: text("userId")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    productId: serial("productId")
+      .notNull()
+      .references(() => Product.id, { onDelete: "cascade" }),
+    comments: text("comments").notNull(),
+    created: timestamp("created").defaultNow(),
+  },
+  (table) => {
+    return {
+      productIdx: index("productIdx").on(table.productId),
+      userIdx: index("userIdx").on(table.userId),
+    };
+  }
+);
+
+export const reviewsRelations = relations(reviews, ({ one }) => ({
+  product: one(Product, {
+    fields: [reviews.productId],
+    references: [Product.id],
+    relationName: "reviews",
+  }),
+  user: one(users, {
+    fields: [reviews.userId],
+    references: [users.id],
+    relationName: "user_reviews",
+  }),
+}));
+
+export const userRelations = relations(users, ({ many }) => ({
+  reviews: many(reviews, {
+    relationName: "user_reviews",
   }),
 }));

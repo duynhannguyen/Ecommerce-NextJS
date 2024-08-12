@@ -27,7 +27,6 @@ const generateEmailVerificationToken = async (email: string) => {
   const expires = new Date(new Date().getTime() + 3600 * 1000);
 
   const exitstingToken = await getVerificationTokenByEmail(email);
-  console.log("exitstingToken in token.ts", exitstingToken);
   if (exitstingToken) {
     await db.delete(emailTokens).where(eq(emailTokens.id, exitstingToken.id));
   }
