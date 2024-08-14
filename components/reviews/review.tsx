@@ -3,6 +3,7 @@ import ReviewForm from "./review-form";
 import Review from "./reviews";
 import { desc, eq } from "drizzle-orm";
 import { reviews } from "@/server/schema";
+import ReviewChart from "./review-chart";
 
 export default async function Reviews({ productId }: { productId: number }) {
   const data = await db.query.reviews.findMany({
@@ -22,6 +23,7 @@ export default async function Reviews({ productId }: { productId: number }) {
         <div className="flex-1 flex flex-col gap-2 ">
           {" "}
           <ReviewForm />
+          <ReviewChart reviews={data} />
         </div>
       </div>
     </section>

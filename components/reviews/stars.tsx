@@ -26,9 +26,11 @@ export default function Stars({
           )}
         ></Star>
       ))}
-      <span className="text-secondary-foreground text-sm font-bold ml-2">
-        {totalReviews} reviews
-      </span>
+      {totalReviews && (
+        <span className="text-secondary-foreground text-sm font-bold ml-2">
+          {totalReviews} reviews
+        </span>
+      )}
     </div>
   );
 }

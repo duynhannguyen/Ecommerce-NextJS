@@ -10,7 +10,6 @@ type ProductType = {
   variants: VariantsWithProduct[];
 };
 export const Products = ({ variants }: ProductType) => {
-  console.log("variant", variants);
   return (
     <main className=" grid sm:grid-cols-1 md:grid-cols-2 gap-12 lg:grid-cols-3 ">
       {variants.map((variant) => (
