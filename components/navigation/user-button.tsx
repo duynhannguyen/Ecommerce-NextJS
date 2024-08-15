@@ -42,7 +42,7 @@ const UserButton = ({ user }: Session) => {
       <div>
         <DropdownMenu modal={false}>
           <DropdownMenuTrigger>
-            <Avatar className="bg-primary/25">
+            <Avatar className="bg-primary/25 w-7 h-7 ">
               {user.image && (
                 <Image
                   src={user.image}
