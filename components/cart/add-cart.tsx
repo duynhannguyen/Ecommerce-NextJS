@@ -49,7 +49,7 @@ export default function AddCart() {
           toast.success(`Added ${title + " " + type} to your cart! `);
           addToCart({
             id: +productId,
-            name: title + type,
+            name: title + " " + type,
             image,
             price: +price,
             variant: {

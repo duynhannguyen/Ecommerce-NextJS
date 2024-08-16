@@ -23,7 +23,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <div className="px-6 md:px-12 max-w-7xl mx-auto ">
+          <div className="px-6 md:px-12 max-w-8xl mx-auto ">
             <Nav />
             <Toaster richColors />
             {children}

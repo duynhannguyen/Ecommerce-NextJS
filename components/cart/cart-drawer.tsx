@@ -37,9 +37,13 @@ export default function CartDrawer() {
           <ShoppingBag />
         </div>
       </DrawerTrigger>
-      <DrawerContent>
-        <DrawerHeader>Cart Stuff</DrawerHeader>
-        <CartItems />
+      <DrawerContent className="min-h-50vh">
+        <DrawerHeader>
+          <h1>Cart Progress</h1>
+        </DrawerHeader>
+        <div className="overflow-auto p-4 ">
+          <CartItems />
+        </div>
       </DrawerContent>
     </Drawer>
   );
