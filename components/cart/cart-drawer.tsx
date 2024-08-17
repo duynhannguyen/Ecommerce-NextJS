@@ -14,9 +14,10 @@ import {
 } from "@/components/ui/drawer";
 import { AnimatePresence, motion } from "framer-motion";
 import CartItems from "./cart-items";
+import CartMessage from "./cart-message";
 
 export default function CartDrawer() {
-  const { cart } = useCartStore();
+  const { cart, checkoutProgress } = useCartStore();
 
   return (
     <Drawer>
@@ -39,10 +40,10 @@ export default function CartDrawer() {
       </DrawerTrigger>
       <DrawerContent className="min-h-50vh">
         <DrawerHeader>
-          <h1>Cart Progress</h1>
+          <CartMessage />
         </DrawerHeader>
         <div className="overflow-auto p-4 ">
-          <CartItems />
+          {checkoutProgress === "cart-page" && <CartItems />}
         </div>
       </DrawerContent>
     </Drawer>
