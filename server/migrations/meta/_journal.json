@@ -64,6 +64,20 @@
       "when": 1723911100777,
       "tag": "0008_steady_warstar",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1723989841289,
+      "tag": "0009_amused_bedlam",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1723989938919,
+      "tag": "0010_aberrant_onslaught",
+      "breakpoints": true
     }
   ]
 }
