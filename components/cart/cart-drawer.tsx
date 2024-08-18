@@ -1,7 +1,7 @@
 "use client";
 
 import { useCartStore } from "@/lib/client-store";
-import { ShoppingBag } from "lucide-react";
+import { Divide, ShoppingBag } from "lucide-react";
 import {
   Drawer,
   DrawerClose,
@@ -16,6 +16,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import CartItems from "./cart-items";
 import CartMessage from "./cart-message";
 import Payment from "./payment";
+import OrderConfirmed from "./order-confirmed";
 
 export default function CartDrawer() {
   const { cart, checkoutProgress } = useCartStore();
@@ -46,6 +47,7 @@ export default function CartDrawer() {
         <div className="overflow-auto p-4 ">
           {checkoutProgress === "cart-page" && <CartItems />}
           {checkoutProgress === "payment-page" && <Payment />}
+          {checkoutProgress === "confirmation-page" && <OrderConfirmed />}
         </div>
       </DrawerContent>
     </Drawer>
