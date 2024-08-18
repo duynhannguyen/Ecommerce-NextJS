@@ -18,7 +18,7 @@ import FormError from "../auth/form-error";
 export default function PaymentForm({ totalPrice }: { totalPrice: number }) {
   const stripe = useStripe();
   const elements = useElements();
-  const { cart, setCheckoutProgress } = useCartStore();
+  const { cart, setCheckoutProgress, clearCart } = useCartStore();
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -31,6 +31,7 @@ export default function PaymentForm({ totalPrice }: { totalPrice: number }) {
       if (data.data?.success) {
         setLoading(false);
         setCheckoutProgress("confirmation-page");
+        clearCart();
         toast.success(data.data.success);
       }
     },
