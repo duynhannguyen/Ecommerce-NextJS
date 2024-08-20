@@ -16,7 +16,6 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -25,6 +24,7 @@ import { formatDistance, subMinutes } from "date-fns";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -39,6 +39,7 @@ import { Button } from "@/components/ui/button";
 import { MoreHorizontal } from "lucide-react";
 import Image from "next/image";
 import { formatPrice } from "@/lib/format-price";
+import Link from "next/link";
 
 export default async function Page() {
   const user = await auth();
@@ -89,8 +90,8 @@ export default async function Page() {
                   <Badge
                     className={
                       order.status === "succeeded"
-                        ? "bg-green-700"
-                        : "bg-secondary"
+                        ? "bg-green-700 hover:bg-green-800 "
+                        : "bg-yellow-700 hover:bg-yellow-800 "
                     }
                   >
                     {order.status}
@@ -109,20 +110,38 @@ export default async function Page() {
                           <MoreHorizontal size={16} />
                         </Button>
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent>
+                      <DropdownMenuContent className="rounded-md">
                         <DropdownMenuItem>
-                          <DialogTrigger>
+                          <DialogTrigger asChild>
                             <Button variant={"ghost"} className="w-full">
                               View detail
                             </Button>
                           </DialogTrigger>
                         </DropdownMenuItem>
+                        <DropdownMenuItem>
+                          {order.receiptURL ? (
+                            <Button
+                              asChild
+                              variant={"ghost"}
+                              className="w-full"
+                            >
+                              <Link href={order.receiptURL} target="_blank">
+                                Download Reciept
+                              </Link>
+                            </Button>
+                          ) : null}
+                        </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
                     <DialogContent>
                       <DialogHeader>
-                        <DialogTitle>Order Details #{order.id}</DialogTitle>
+                        <DialogTitle className="text-center">
+                          Order Details #{order.id}
+                        </DialogTitle>
                       </DialogHeader>
+                      <DialogDescription className="text-center">
+                        Your order total is {formatPrice(order.total)}
+                      </DialogDescription>
                       <Card className="flex flex-col gap-4  p-2 overflow-auto ">
                         <Table>
                           <TableHeader>
