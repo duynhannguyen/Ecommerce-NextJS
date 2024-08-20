@@ -30,7 +30,7 @@ export const useCartStore = create<CartState>()(
   persist(
     (set) => ({
       cart: [],
-      checkoutProgress: "confirmation-page",
+      checkoutProgress: "cart-page",
       cartOpen: false,
       setCartOpen: (value) => set({ cartOpen: value }),
       setCheckoutProgress: (value) =>
