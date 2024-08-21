@@ -2,14 +2,15 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
-  CardHeader,
   CardTitle,
 } from "@/components/ui/card";
 import { db } from "@/server";
 import { orderProduct } from "@/server/schema";
 import { desc } from "drizzle-orm";
 import Sales from "./sales";
+import Revenue from "./revenue";
+
+export const revalidate = 0;
 
 export default async function Analytics() {
   const totalOrders = await db.query.orderProduct.findMany({
@@ -46,6 +47,7 @@ export default async function Analytics() {
         </CardDescription>
         <CardContent>
           <Sales totalOrders={totalOrders} />
+          <Revenue totalOrders={totalOrders} />
         </CardContent>
       </Card>
     );
