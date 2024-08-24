@@ -25,30 +25,31 @@ export const Products = ({ variants }: ProductType) => {
   }, [paramTag]);
 
   return (
-    <main className=" grid sm:grid-cols-1 md:grid-cols-2 gap-12 lg:grid-cols-3 ">
+    <main className=" grid sm:grid-cols-1 md:grid-cols-2 gap-12 lg:grid-cols-3  ">
       {filterByTag.map((variant) => (
         <Link
-          className="py-2"
+          className="py-2 w-full h-[600px] flex flex-col gap-3 "
           key={variant.id}
           href={`/products/${variant.id}?id=${variant.id}&productId=${variant.productId}&price=${variant.product.price}&title=${variant.product.title}&type=${variant.productType}&image=${variant.variantsImages[0].url}`}
         >
           <Image
-            className=" rounded-md pb-2"
+            className=" rounded-md w-full h-4/5 overflow-y-hidden  "
             src={variant.variantsImages[0].url}
-            width={720}
-            height={480}
+            width={350}
+            height={350}
             alt={variant.product.title}
             loading="lazy"
           />
-          <div className="flex justify-between">
-            <div className="font-medium">
+
+          <div className=" h-1/5 flex  justify-between">
+            <div className=" font-medium">
               <h2> {variant.product.title} </h2>
               <p className=" text-sm text-muted-foreground">
                 {variant.productType}
               </p>
             </div>
             <div>
-              <Badge className="text-sm" variant={"secondary"}>
+              <Badge className="text-sm  " variant={"secondary"}>
                 {formatPrice(variant.product.price)}
               </Badge>
             </div>
