@@ -31,8 +31,6 @@ export const emailSignIn = action
           const twoFactorToken = await getTwoFactorTokenByEmail(
             exitstingUser.email
           );
-          console.log("code", code);
-          console.log("twoFactorToken", twoFactorToken);
           if (!twoFactorToken) {
             return { error: "Invalid Token" };
           }

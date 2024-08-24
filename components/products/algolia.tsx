@@ -7,6 +7,7 @@ import Image from "next/image";
 import { Card } from "../ui/card";
 import { useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { formatPrice } from "@/lib/format-price";
 export default function Algolia() {
   const [active, setActive] = useState(false);
 
@@ -90,7 +91,7 @@ function Hit({
       <Link
         href={`/products/${hit.objectID}?id=${hit.objectID}&productId=${hit.id}&price=${hit.price}&title=${hit.title}&type=${hit.productType}&image=${hit.variantImages}&variantId=${hit.objectID}`}
       >
-        <div className="flex w-full gap-12 items-center justify-between ">
+        <div className="text-left  flex w-full gap-12 items-center justify-between ">
           <Image
             src={hit.variantImages}
             alt={hit.title}
@@ -98,18 +99,21 @@ function Hit({
             height={100}
           />
           <p
+            className="flex-grow basis-0"
             dangerouslySetInnerHTML={{
               __html: hit._highlightResult.title.value,
             }}
           ></p>
           <p
+            className="flex-grow basis-0"
             dangerouslySetInnerHTML={{
               __html: hit._highlightResult.productType.value,
             }}
           ></p>
           <p
-            className="font-medium"
-            dangerouslySetInnerHTML={{ __html: hit.price }}
+            className="font-medium
+             "
+            dangerouslySetInnerHTML={{ __html: formatPrice(hit.price) }}
           ></p>
         </div>
       </Link>

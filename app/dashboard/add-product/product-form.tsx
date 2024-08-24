@@ -85,7 +85,6 @@ export default function ProductForm() {
     },
   });
   const onSubmit = (value: z.infer<typeof ProductSchema>) => {
-    console.log("value", value);
     execute(value);
   };
   return (

@@ -20,7 +20,6 @@ export default function ReviewChart({
         ratingValues[starIndex]++;
       }
     });
-    console.log(ratingValues);
     return ratingValues.map((rating) => (rating / totalReviews) * 100);
   }, [reviews]);
 

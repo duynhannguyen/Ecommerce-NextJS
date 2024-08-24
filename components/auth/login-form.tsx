@@ -58,7 +58,6 @@ const LoginForm = () => {
 
   const onSubmit = (values: z.infer<typeof LoginSchema>) => {
     execute(values);
-    console.log("value", values);
   };
 
   return (

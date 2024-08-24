@@ -70,7 +70,6 @@ const VariantsImages = () => {
                   return files;
                 }}
                 onClientUploadComplete={(files) => {
-                  console.log("files", files);
                   const images = getValues("variantImages");
                   images.map((field, imgIDX) => {
                     if (field.url.search("blob:") === 0) {

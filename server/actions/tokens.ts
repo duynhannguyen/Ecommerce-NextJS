@@ -15,7 +15,6 @@ export const getVerificationTokenByEmail = async (email: string) => {
     const verificationToken = await db.query.emailTokens.findFirst({
       where: eq(emailTokens.email, email),
     });
-    console.log("verificationToken in token.ts ", verificationToken);
     return verificationToken;
   } catch (error) {
     return null;
@@ -47,7 +46,6 @@ export default generateEmailVerificationToken;
 
 export const newVerification = async (email: string) => {
   const exitstingToken = await getVerificationTokenByEmail(email);
-  console.log("exitstingToken", exitstingToken);
 
   if (!exitstingToken) return { error: "Token not found" };
   const hasExpired = new Date(exitstingToken.expires) < new Date();
@@ -158,7 +156,6 @@ export const generateTwoFactorToken = async (email: string) => {
         expires,
       })
       .returning();
-    console.log("twoFactorToken", twoFactorTokens);
     return twoFactorToken;
   } catch (error) {
     return null;

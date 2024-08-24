@@ -8,11 +8,16 @@ import CartDrawer from "../cart/cart-drawer";
 const Nav = async () => {
   const session = await auth();
   return (
-    <header className="py-8">
+    <header className="py-2">
       <nav>
         <ul className="flex justify-between items-center md:gap-8 gap-4 ">
-          <li className="flex flex-1">
-            <Link href={"/"} title="logo" aria-label="sprout and scrible logo">
+          <li className="flex  flex-1 ">
+            <Link
+              className="h-28 w-28  "
+              href={"/"}
+              title="logo"
+              aria-label="sprout and scrible logo"
+            >
               <Logo />{" "}
             </Link>
           </li>
