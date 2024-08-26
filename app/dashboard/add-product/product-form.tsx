@@ -69,18 +69,20 @@ export default function ProductForm() {
     onSuccess(data) {
       if (data.data?.success) {
         router.push("/dashboard/products");
+        toast.dismiss();
         toast.success(data.data.success);
       }
       if (data.data?.error) {
+        toast.dismiss();
         toast.error(data.data.error);
       }
     },
     onExecute() {
       if (editMode) {
-        toast.loading("Updating product");
+        toast.loading("Updating product", { duration: 1 });
       }
       if (!editMode) {
-        toast.loading("Creating product");
+        toast.loading("Creating product", { duration: 1 });
       }
     },
   });

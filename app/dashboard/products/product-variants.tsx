@@ -77,21 +77,28 @@ export const ProductVariant = forwardRef<HTMLDivElement, ProductVariantProps>(
           );
       }
     };
-
     useEffect(() => {
       setEdit();
     }, []);
 
     const { execute, status } = useAction(createVariant, {
       onExecute() {
-        toast.loading("Creating variant", { duration: 500 });
-        setOpen(false);
+        if (editMode) {
+          toast.loading("Updating variant", { duration: 1 });
+          setOpen(false);
+        }
+        if (!editMode) {
+          toast.loading("Creating variant", { duration: 1 });
+          setOpen(false);
+        }
       },
       onSuccess(data) {
         if (data.data?.error) {
+          toast.dismiss();
           toast.error(data.data.error);
         }
         if (data.data?.success) {
+          toast.dismiss();
           toast.success(data.data.success);
         }
       },

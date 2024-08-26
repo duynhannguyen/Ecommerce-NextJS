@@ -10,9 +10,9 @@ export const VariantSchema = z.object({
   color: z
     .string()
     .min(3, { message: "Color must be at least 3 characters long" }),
-  tag: z.array(
-    z.string().min(1, { message: " You must be provide at least one tag" })
-  ),
+  tag: z
+    .array(z.string())
+    .min(1, { message: " You must be provide at least one tag" }),
   variantImages: z
     .array(
       z.object({
