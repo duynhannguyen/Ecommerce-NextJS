@@ -21,7 +21,7 @@ const Products = async () => {
         image: placeholder.src,
       };
     }
-    const image = product.productVariants[0].variantsImages[0].url;
+    const image = product.productVariants[0]?.variantsImages[0]?.url;
     return {
       id: product.id,
       title: product.title,
