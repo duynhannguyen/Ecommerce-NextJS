@@ -111,9 +111,11 @@ export const ProductVariant = forwardRef<HTMLDivElement, ProductVariantProps>(
       },
       onSuccess(data) {
         if (data.data?.error) {
+          toast.dismiss();
           toast.error(data.data.error);
         }
         if (data.data?.success) {
+          toast.dismiss();
           toast.success(data.data.success);
         }
       },

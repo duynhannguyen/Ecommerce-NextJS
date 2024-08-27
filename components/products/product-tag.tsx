@@ -29,22 +29,31 @@ export default function ProductTags() {
         All
       </Badge>
       <Badge
-        onClick={() => setFilter("yellow")}
+        onClick={() => setFilter("tâm lí")}
         className={cn(
           "cursor-pointer bg-yellow-500  hover:opacity-100 hover:bg-yellow-600 ",
-          tag === "yellow" && tag ? "opacity-100" : "opacity-50"
+          tag === "tâm lí" && tag ? "opacity-100" : "opacity-50"
         )}
       >
-        Yellow
+        Tâm lí
       </Badge>
       <Badge
-        onClick={() => setFilter("pink")}
+        onClick={() => setFilter("sổ")}
         className={cn(
           "cursor-pointer hover:opacity-100 bg-pink-500 hover:bg-pink-600 ",
-          tag === "pink" && tag ? "opacity-100" : "opacity-50"
+          tag === "sổ" && tag ? "opacity-100" : "opacity-50"
         )}
       >
-        Pink
+        Sổ tay
+      </Badge>
+      <Badge
+        onClick={() => setFilter("văn phòng phẩm")}
+        className={cn(
+          "cursor-pointer hover:opacity-100 bg-blue-500 hover:bg-blue-600 ",
+          tag === "văn phòng phẩm" && tag ? "opacity-100" : "opacity-50"
+        )}
+      >
+        Văn phòng phẩm
       </Badge>
     </div>
   );

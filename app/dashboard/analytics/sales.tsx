@@ -22,7 +22,7 @@ import { formatPrice } from "@/lib/format-price";
 
 export default function Sales({ totalOrders }: { totalOrders: TotalOrders[] }) {
   return (
-    <Card className="p-6">
+    <Card className="p-6 mb-7">
       <CardTitle>New Sales</CardTitle>
       <CardDescription className="my-4">
         {" "}
