@@ -23,7 +23,7 @@ export const Products = ({ variants }: ProductType) => {
     }
     return variants;
   }, [paramTag]);
-  console.log("filterByTag", filterByTag);
+
   return (
     <main className=" grid sm:grid-cols-1 md:grid-cols-2 gap-12 lg:grid-cols-3  ">
       {filterByTag.map((variant) => (

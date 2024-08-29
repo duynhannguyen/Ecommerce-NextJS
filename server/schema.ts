@@ -180,6 +180,7 @@ export const variantsTags = pgTable("variantsTags", {
 export const productRelations = relations(Product, ({ many }) => ({
   productVariants: many(productVariants, { relationName: "productVariants" }),
   reviews: many(reviews, { relationName: "reviews" }),
+  productOnCode: many(discountCodeProduct, { relationName: "productOnCode" }),
 }));
 export const productVariantsRelation = relations(
   productVariants,
@@ -270,6 +271,7 @@ export const ordersRelation = relations(orders, ({ one, many }) => ({
     relationName: "user_orders",
   }),
   orderProduct: many(orderProduct, { relationName: "orderProduct" }),
+  orderOnCode: many(discountCodeOrder, { relationName: "orderOnCode" }),
 }));
 
 export const orderProduct = pgTable("orderProduct", {
@@ -307,7 +309,8 @@ export const orderProductRelations = relations(orderProduct, ({ one }) => ({
 export const discountCode = pgTable("discountCode", {
   id: text("id")
     .notNull()
-    .$defaultFn(() => crypto.randomUUID()),
+    .$defaultFn(() => crypto.randomUUID())
+    .primaryKey(),
   discountAmount: integer("discountAmount"),
   discountType: DiscountType("discountType"),
   code: text("code").notNull().unique(),
@@ -319,10 +322,10 @@ export const discountCode = pgTable("discountCode", {
   allProducts: boolean("allProducts").default(true),
 });
 
-export const discountCodeRlations = relations(
-  discountCode,
-  ({ one, many }) => ({})
-);
+export const discountCodeRlations = relations(discountCode, ({ many }) => ({
+  codeOnProduct: many(discountCodeProduct, { relationName: "codeOnProduct" }),
+  codeOnOrder: many(discountCodeOrder, { relationName: "codeOnOrder" }),
+}));
 
 export const discountCodeProduct = pgTable(
   "discountCodeProduct",
@@ -334,16 +337,55 @@ export const discountCodeProduct = pgTable(
       .notNull()
       .references(() => discountCode.id, { onDelete: "cascade" }),
   },
-  (table) => {
-    return {
-      pk: primaryKey(table.productId, table.discountCodeId),
-    };
-  }
+  (table) => ({
+    pk: primaryKey({
+      columns: [table.productId, table.discountCodeId],
+    }),
+  })
 );
 export const discountCodeProductRelation = relations(
   discountCodeProduct,
-  ({ many }) => ({
-    code: many(discountCode, { relationName: "code" }),
-    product: many(Product, { relationName: "product" }),
+  ({ one }) => ({
+    codeOnProduct: one(discountCode, {
+      fields: [discountCodeProduct.discountCodeId],
+      references: [discountCode.id],
+      relationName: "codeOnProduct",
+    }),
+    productOnCode: one(Product, {
+      fields: [discountCodeProduct.productId],
+      references: [Product.id],
+      relationName: "productOnCode",
+    }),
+  })
+);
+export const discountCodeOrder = pgTable(
+  "discountCodeOrder",
+  {
+    orderId: serial("orderId")
+      .notNull()
+      .references(() => orders.id, { onDelete: "restrict" }),
+    discountCodeId: text("discountCodeId")
+      .notNull()
+      .references(() => discountCode.id, { onDelete: "restrict" }),
+  },
+  (table) => ({
+    pk: primaryKey({
+      columns: [table.orderId, table.discountCodeId],
+    }),
+  })
+);
+export const discountCodeOrderRelation = relations(
+  discountCodeOrder,
+  ({ one }) => ({
+    codeOnOrder: one(discountCode, {
+      fields: [discountCodeOrder.discountCodeId],
+      references: [discountCode.id],
+      relationName: "codeOnOrder",
+    }),
+    productOnCode: one(orders, {
+      fields: [discountCodeOrder.orderId],
+      references: [orders.id],
+      relationName: "orderOnCode",
+    }),
   })
 );
