@@ -12,9 +12,8 @@ import {
   timestamp,
 } from "drizzle-orm/pg-core";
 import type { AdapterAccountType } from "next-auth/adapters";
-
 export const RoleEnum = pgEnum("roles", ["user", "admin"]);
-
+export const DiscountType = pgEnum("discountType", ["Percented", "Fixed"]);
 export const posts = pgTable("post", {
   id: serial("id").primaryKey().notNull(),
   title: text("title").notNull(),
@@ -304,3 +303,47 @@ export const orderProductRelations = relations(orderProduct, ({ one }) => ({
     relationName: "productVariants",
   }),
 }));
+
+export const discountCode = pgTable("discountCode", {
+  id: text("id")
+    .notNull()
+    .$defaultFn(() => crypto.randomUUID()),
+  discountAmount: integer("discountAmount"),
+  discountType: DiscountType("discountType"),
+  code: text("code").notNull().unique(),
+  limit: integer("limit"),
+  createdAt: timestamp("createdAt").defaultNow(),
+  expiresAt: timestamp("expires"),
+  uses: integer("uses").default(0),
+  isActive: boolean("isActive"),
+  allProducts: boolean("allProducts").default(true),
+});
+
+export const discountCodeRlations = relations(
+  discountCode,
+  ({ one, many }) => ({})
+);
+
+export const discountCodeProduct = pgTable(
+  "discountCodeProduct",
+  {
+    productId: serial("productId")
+      .notNull()
+      .references(() => Product.id, { onDelete: "cascade" }),
+    discountCodeId: text("discountCodeId")
+      .notNull()
+      .references(() => discountCode.id, { onDelete: "cascade" }),
+  },
+  (table) => {
+    return {
+      pk: primaryKey(table.productId, table.discountCodeId),
+    };
+  }
+);
+export const discountCodeProductRelation = relations(
+  discountCodeProduct,
+  ({ many }) => ({
+    code: many(discountCode, { relationName: "code" }),
+    product: many(Product, { relationName: "product" }),
+  })
+);
