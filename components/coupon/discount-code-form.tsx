@@ -37,6 +37,7 @@ export default function DiscountCodeForm() {
   });
   const today = new Date();
   today.setMinutes(today.getMinutes() - today.getTimezoneOffset());
+
   const { execute, status } = useAction(addDiscountCode, {
     onSuccess: (data) => {
       console.log("data", data);
@@ -153,7 +154,7 @@ export default function DiscountCodeForm() {
                     <Input
                       {...field}
                       type="datetime-local"
-                      // min={new Date().toJSON().split(":").slice(0, -1).join()}
+                      min={today.toJSON().split(":").slice(0, -1).join(":")}
                       className="w-max"
                       value={undefined}
                     />

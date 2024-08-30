@@ -16,10 +16,11 @@ export const discountCodeSchema = z
     ),
     expiresAt: z.preprocess(
       (value) => (value === "" ? "" : value),
-      z.coerce
-        .date()
-        .min(new Date(), { message: "Expiration date must be in the future " })
-        .optional()
+      z.coerce.date().min(new Date(), {
+        message: `Expiration date must be in the future ${new Date(
+          new Date().toJSON().split(":").slice(0, -1).join(":")
+        )}  `,
+      })
     ),
   })
   .refine(
