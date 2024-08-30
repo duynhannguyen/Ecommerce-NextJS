@@ -1,6 +1,13 @@
 import { DashBoardNav } from "@/components/navigation/dashboard-nav";
 import { auth } from "@/server/auth";
-import { BarChart, Package, PenSquare, Settings, Truck } from "lucide-react";
+import {
+  BarChart,
+  Package,
+  PenSquare,
+  Settings,
+  Ticket,
+  Truck,
+} from "lucide-react";
 import React from "react";
 
 const DashBoardLayout = async ({ children }: { children: React.ReactNode }) => {
@@ -23,6 +30,11 @@ const DashBoardLayout = async ({ children }: { children: React.ReactNode }) => {
             label: "Products",
             path: "/dashboard/products",
             icon: <Package size={16} />,
+          },
+          {
+            label: "Coupons",
+            path: "/dashboard/coupon",
+            icon: <Ticket size={16} />,
           },
         ]
       : [];
