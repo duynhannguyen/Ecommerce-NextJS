@@ -1,4 +1,3 @@
-import { title } from "process";
 import * as z from "zod";
 
 export const discountCodeSchema = z
@@ -12,7 +11,7 @@ export const discountCodeSchema = z
       .int()
       .min(1, { message: "Discount amount must greater than or equal to 1  " }),
     limit: z.preprocess(
-      (value) => (value === "" ? undefined : value),
+      (value) => (value === 0 ? undefined : value),
       z.coerce.number().int().min(1).optional()
     ),
     allProduct: z.coerce.boolean(),

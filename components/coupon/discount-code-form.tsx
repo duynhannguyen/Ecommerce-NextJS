@@ -28,7 +28,7 @@ import { addDiscountCode } from "@/server/actions/add-discount-code";
 import * as z from "zod";
 import { discountCodeSchema } from "@/types/discount-code-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { cn } from "@/lib/utils";
 export default function DiscountCodeForm({
   products,
@@ -55,23 +55,23 @@ export default function DiscountCodeForm({
       console.log("data", data);
     },
   });
-  const selectedProduct = (id: number) => {
-    const allSelectedProduct = [...productId, id];
-    const existingId = productId.includes(id);
-    console.log("productId", productId);
-    console.log("allSelectedProduct", allSelectedProduct);
-    if (existingId) {
-      const filterId = allSelectedProduct.filter(
-        (productId) => productId !== id
-      );
-      console.log("filterId", filterId);
-      setProductId(filterId);
-      form.setValue("products", filterId);
-      return;
-    }
-    setProductId(allSelectedProduct);
-    form.setValue("products", allSelectedProduct);
-  };
+  const selectedProduct = useCallback(
+    (id: number) => {
+      const allSelectedProduct = [...productId, id];
+      const existingId = productId.includes(id);
+      if (existingId) {
+        const filterId = allSelectedProduct.filter(
+          (productId) => productId !== id
+        );
+        setProductId(filterId);
+        form.setValue("products", filterId);
+        return;
+      }
+      setProductId(allSelectedProduct);
+      form.setValue("products", allSelectedProduct);
+    },
+    [productId]
+  );
   const onSubmit = (values: z.infer<typeof discountCodeSchema>) => {
     console.log("values", values);
     execute(values);
@@ -199,7 +199,9 @@ export default function DiscountCodeForm({
               name="allProduct"
               render={({ field }) => (
                 <FormItem className="flex flex-row items-start space-x-2 space-y-0">
-                  <FormLabel htmlFor={field.name}>All product</FormLabel>
+                  <FormLabel className="cursor-pointer" htmlFor={field.name}>
+                    All product
+                  </FormLabel>
                   <FormControl>
                     <Checkbox
                       id={field.name}
@@ -233,7 +235,8 @@ export default function DiscountCodeForm({
                             className={cn(
                               allProduct
                                 ? "text-muted-foreground cursor-not-allowed "
-                                : null
+                                : null,
+                              "cursor-pointer"
                             )}
                             htmlFor={String(item.id)}
                           >
