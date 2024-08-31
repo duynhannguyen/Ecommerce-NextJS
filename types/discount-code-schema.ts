@@ -1,3 +1,4 @@
+import { title } from "process";
 import * as z from "zod";
 
 export const discountCodeSchema = z
@@ -14,13 +15,16 @@ export const discountCodeSchema = z
       (value) => (value === "" ? undefined : value),
       z.coerce.number().int().min(1).optional()
     ),
+    allProduct: z.coerce.boolean(),
+    products: z.array(z.number()).optional(),
     expiresAt: z.preprocess(
       (value) => (value === "" ? "" : value),
-      z.coerce.date().min(new Date(), {
-        message: `Expiration date must be in the future ${new Date(
-          new Date().toJSON().split(":").slice(0, -1).join(":")
-        )}  `,
-      })
+      z.coerce
+        .date()
+        .min(new Date(), {
+          message: "Expiration date must be in the future  ",
+        })
+        .optional()
     ),
   })
   .refine(
@@ -29,4 +33,12 @@ export const discountCodeSchema = z
       path: ["discountAmount"],
       message: "Percentage discount must be less than or equal to 100",
     }
-  );
+  )
+  .refine((data) => !data.allProduct || data.products?.length === 0, {
+    path: ["products"],
+    message: "Cannot select product when all product is selected",
+  })
+  .refine((data) => data.allProduct || data.products?.length !== 0, {
+    path: ["products"],
+    message: " Must select product when all product is not selected ",
+  });

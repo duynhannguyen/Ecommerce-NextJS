@@ -6,6 +6,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
+
 import {
   Form,
   FormControl,
@@ -26,13 +28,23 @@ import { addDiscountCode } from "@/server/actions/add-discount-code";
 import * as z from "zod";
 import { discountCodeSchema } from "@/types/discount-code-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
-export default function DiscountCodeForm() {
+import { useState } from "react";
+import { cn } from "@/lib/utils";
+export default function DiscountCodeForm({
+  products,
+}: {
+  products: { title: string; id: number }[];
+}) {
+  const [allProduct, setAllProduct] = useState(true);
+  const [productId, setProductId] = useState<number[]>([]);
   const form = useForm<z.infer<typeof discountCodeSchema>>({
     resolver: zodResolver(discountCodeSchema),
     defaultValues: {
       couponCode: "",
       discountType: "percented",
       discountAmount: 0,
+      products: [],
+      allProduct: true,
     },
   });
   const today = new Date();
@@ -43,7 +55,23 @@ export default function DiscountCodeForm() {
       console.log("data", data);
     },
   });
-
+  const selectedProduct = (id: number) => {
+    const allSelectedProduct = [...productId, id];
+    const existingId = productId.includes(id);
+    console.log("productId", productId);
+    console.log("allSelectedProduct", allSelectedProduct);
+    if (existingId) {
+      const filterId = allSelectedProduct.filter(
+        (productId) => productId !== id
+      );
+      console.log("filterId", filterId);
+      setProductId(filterId);
+      form.setValue("products", filterId);
+      return;
+    }
+    setProductId(allSelectedProduct);
+    form.setValue("products", allSelectedProduct);
+  };
   const onSubmit = (values: z.infer<typeof discountCodeSchema>) => {
     console.log("values", values);
     execute(values);
@@ -162,6 +190,66 @@ export default function DiscountCodeForm() {
                   <FormDescription>
                     Leave blank for no expiration
                   </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="allProduct"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-start space-x-2 space-y-0">
+                  <FormLabel htmlFor={field.name}>All product</FormLabel>
+                  <FormControl>
+                    <Checkbox
+                      id={field.name}
+                      checked={allProduct}
+                      onCheckedChange={(e) => {
+                        setAllProduct(e === true);
+                        form.setValue("allProduct", e === true);
+                      }}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              name="products"
+              control={form.control}
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <div
+                      className="grid grid-cols-1 gap-2 lg:grid-cols-3 md:grid-cols-2 "
+                      {...field}
+                    >
+                      {products.map((item) => (
+                        <div
+                          className="flex gap-2 justify-between items-center  "
+                          key={item.id}
+                        >
+                          <Label
+                            className={cn(
+                              allProduct
+                                ? "text-muted-foreground cursor-not-allowed "
+                                : null
+                            )}
+                            htmlFor={String(item.id)}
+                          >
+                            {" "}
+                            {item.title}
+                          </Label>
+                          <Checkbox
+                            id={String(item.id)}
+                            value={item.id}
+                            disabled={allProduct}
+                            onCheckedChange={() => selectedProduct(item.id)}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
