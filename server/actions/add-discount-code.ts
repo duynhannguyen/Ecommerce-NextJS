@@ -4,7 +4,7 @@ import { discountCodeSchema } from "@/types/discount-code-schema";
 import { createSafeActionClient } from "next-safe-action";
 import { db } from "..";
 import { eq } from "drizzle-orm";
-import { discountCode } from "../schema";
+import { discountCode, discountCodeProduct } from "../schema";
 
 const action = createSafeActionClient();
 
@@ -41,6 +41,14 @@ export const addDiscountCode = action
             allProducts: allProduct,
           })
           .returning();
+        console.log("saveCodeToProduct", products);
+        const saveCodeToProduct = products?.map(async (productId) => {
+          const saving = await db.insert(discountCodeProduct).values({
+            discountCodeId: saveCodeToDb[0].id,
+            productId: productId,
+          });
+        });
+        return { success: "Create coupon successfully" };
       } catch (error) {
         console.log(error);
       }

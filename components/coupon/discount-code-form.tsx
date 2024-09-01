@@ -30,6 +30,7 @@ import { discountCodeSchema } from "@/types/discount-code-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useCallback, useState } from "react";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 export default function DiscountCodeForm({
   products,
 }: {
@@ -51,8 +52,16 @@ export default function DiscountCodeForm({
   today.setMinutes(today.getMinutes() - today.getTimezoneOffset());
 
   const { execute, status } = useAction(addDiscountCode, {
-    onSuccess: (data) => {
-      console.log("data", data);
+    onExecute: () => {
+      toast.loading("Creating coupon...", { duration: 1 });
+    },
+    onSuccess: ({ data }) => {
+      if (data?.success) {
+        toast.success(data.success, { duration: 500 });
+      }
+      if (data?.error) {
+        toast.error(data.error, { duration: 500 });
+      }
     },
   });
   const selectedProduct = useCallback(
@@ -223,7 +232,7 @@ export default function DiscountCodeForm({
                 <FormItem>
                   <FormControl>
                     <div
-                      className="grid grid-cols-1 gap-2 lg:grid-cols-3 md:grid-cols-2 "
+                      className="grid grid-cols-1 gap-2 lg:grid-cols-3 md:grid-cols-2 mb-3 "
                       {...field}
                     >
                       {products.map((item) => (
@@ -257,7 +266,17 @@ export default function DiscountCodeForm({
                 </FormItem>
               )}
             />
-            <Button type="submit">Submit</Button>
+            <Button
+              className="w-full transition-all duration-300 ease-in-out "
+              disabled={
+                status === "executing" ||
+                !form.formState.isValid ||
+                !form.formState.isDirty
+              }
+              type="submit"
+            >
+              Create coupon
+            </Button>
           </form>
         </Form>
       </CardContent>
