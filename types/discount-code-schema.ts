@@ -5,14 +5,18 @@ export const discountCodeSchema = z
     couponCode: z
       .string()
       .min(3, { message: "Coupon code must be at least 3 characters" }),
-    discountType: z.enum(["percented", "fixed"]).default("percented"),
+    discountType: z.enum(["Percented", "Fixed"]).default("Percented"),
     discountAmount: z.coerce
       .number()
       .int()
       .min(1, { message: "Discount amount must greater than or equal to 1  " }),
     limit: z.preprocess(
       (value) => (value === 0 ? undefined : value),
-      z.coerce.number().int().min(1).optional()
+      z.coerce
+        .number()
+        .int()
+        .min(1, { message: "Limit must greater than or equal to 1  " })
+        .optional()
     ),
     allProduct: z.coerce.boolean(),
     products: z.array(z.number()).optional(),
@@ -27,7 +31,7 @@ export const discountCodeSchema = z
     ),
   })
   .refine(
-    (data) => data.discountAmount <= 100 || data.discountType !== "percented",
+    (data) => data.discountAmount <= 100 || data.discountType !== "Percented",
     {
       path: ["discountAmount"],
       message: "Percentage discount must be less than or equal to 100",

@@ -41,7 +41,7 @@ export default function DiscountCodeForm({
     resolver: zodResolver(discountCodeSchema),
     defaultValues: {
       couponCode: "",
-      discountType: "percented",
+      discountType: "Percented",
       discountAmount: 0,
       products: [],
       allProduct: true,
@@ -112,28 +112,28 @@ export default function DiscountCodeForm({
                     <FormControl>
                       <RadioGroup
                         id="discountType"
-                        defaultValue="percented"
+                        defaultValue="Percented"
                         {...field}
                       >
                         <div className="flex items-center space-x-2">
                           <RadioGroupItem
-                            value="percented"
+                            value="Percented"
                             onClick={() =>
-                              form.setValue("discountType", "percented")
+                              form.setValue("discountType", "Percented")
                             }
-                            id="percented"
+                            id="Percented"
                           />
-                          <Label htmlFor="percented">Percented</Label>
+                          <Label htmlFor="Percented">Percented</Label>
                         </div>
                         <div className="flex items-center space-x-2">
                           <RadioGroupItem
-                            value="fixed"
+                            value="Fixed"
                             onClick={() =>
-                              form.setValue("discountType", "fixed")
+                              form.setValue("discountType", "Fixed")
                             }
-                            id="fixed"
+                            id="Fixed"
                           />
-                          <Label htmlFor="fixed">Fixed</Label>
+                          <Label htmlFor="Fixed">Fixed</Label>
                         </div>
                       </RadioGroup>
                     </FormControl>

@@ -318,8 +318,8 @@ export const discountCode = pgTable("discountCode", {
   createdAt: timestamp("createdAt").defaultNow(),
   expiresAt: timestamp("expires"),
   uses: integer("uses").default(0),
-  isActive: boolean("isActive"),
-  allProducts: boolean("allProducts").default(true),
+  isActive: boolean("isActive").default(true),
+  allProducts: boolean("allProducts").default(false),
 });
 
 export const discountCodeRlations = relations(discountCode, ({ many }) => ({
