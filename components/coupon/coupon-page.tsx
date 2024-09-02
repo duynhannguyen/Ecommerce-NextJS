@@ -20,11 +20,7 @@ import Link from "next/link";
 import { Button } from "../ui/button";
 import { GetExpiredCode } from "@/app/dashboard/coupon/page";
 
-export default function CouponPage({
-  expiredCode,
-}: {
-  expiredCode: GetExpiredCode[];
-}) {
+export default function CouponPage({ expiredCode }: GetExpiredCode) {
   return (
     <Card>
       <CardHeader>

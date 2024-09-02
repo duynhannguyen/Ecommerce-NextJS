@@ -5,8 +5,8 @@ import { db } from "@/server";
 import { discountCode, discountCodeProduct } from "@/server/schema";
 import { and, asc, eq, gte, isNotNull, isNull, lte, or } from "drizzle-orm";
 
-const getExpiredCode = async () => {
-  return await db
+const getExpiredCode = () => {
+  return db
     .select()
     .from(discountCode)
     .innerJoin(
@@ -28,8 +28,8 @@ const getExpiredCode = async () => {
     .orderBy(asc(discountCode.expiresAt));
 };
 
-const getUnExpiredCode = async () => {
-  return await db
+const getUnExpiredCode = () => {
+  return db
     .select()
     .from(discountCode)
     .innerJoin(
@@ -58,5 +58,10 @@ export type GetUnExpiredCode = {
 };
 
 export default async function Page() {
-  return <CouponPage expiredCode={getExpiredCode} />;
+  const [expiredCode, unExpiredCode] = await Promise.all([
+    getExpiredCode(),
+    getUnExpiredCode(),
+  ]);
+
+  return <CouponPage expiredCode={expiredCode} />;
 }
