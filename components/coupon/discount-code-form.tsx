@@ -31,6 +31,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useCallback, useState } from "react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import Link from "next/link";
 export default function DiscountCodeForm({
   products,
 }: {
@@ -89,7 +90,12 @@ export default function DiscountCodeForm({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Create Coupon</CardTitle>
+        <div className=" flex items-center justify-between ">
+          <CardTitle>Create coupon</CardTitle>
+          <Button>
+            <Link href={"/dashboard/coupon"}>Coupon</Link>
+          </Button>
+        </div>
         <CardDescription>
           {" "}
           Add a new coupon for your product 🎫{" "}

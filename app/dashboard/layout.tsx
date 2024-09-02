@@ -6,6 +6,7 @@ import {
   PenSquare,
   Settings,
   Ticket,
+  TicketPlus,
   Truck,
 } from "lucide-react";
 import React from "react";
@@ -35,6 +36,11 @@ const DashBoardLayout = async ({ children }: { children: React.ReactNode }) => {
             label: "Coupons",
             path: "/dashboard/coupon",
             icon: <Ticket size={16} />,
+          },
+          {
+            label: "Discount",
+            path: "/dashboard/coupon/create-coupon",
+            icon: <TicketPlus size={16} />,
           },
         ]
       : [];
