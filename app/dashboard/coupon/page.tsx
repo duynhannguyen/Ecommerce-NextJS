@@ -2,17 +2,42 @@
 
 import CouponPage from "@/components/coupon/coupon-page";
 import { db } from "@/server";
-import { discountCode, discountCodeProduct } from "@/server/schema";
-import { and, asc, eq, gte, isNotNull, isNull, lte, or } from "drizzle-orm";
+import { discountCode, discountCodeProduct, Product } from "@/server/schema";
+import {
+  and,
+  asc,
+  desc,
+  eq,
+  gte,
+  isNotNull,
+  isNull,
+  lte,
+  or,
+  sql,
+} from "drizzle-orm";
 
 const getExpiredCode = () => {
   return db
-    .select()
+    .select({
+      code: discountCode.code,
+      discountAmount: discountCode.discountAmount,
+      discountType: discountCode.discountType,
+      limit: discountCode.limit,
+      createdAt: discountCode.createdAt,
+      expiresAt: discountCode.expiresAt,
+      uses: discountCode.uses,
+      isActive: discountCode.isActive,
+      allProducts: discountCode.allProducts,
+      productTitle: sql<string>`string_agg(${Product.title}, ', ')`.as(
+        "productTitle"
+      ),
+    })
     .from(discountCode)
     .innerJoin(
       discountCodeProduct,
       eq(discountCodeProduct.discountCodeId, discountCode.id)
     )
+    .leftJoin(Product, eq(discountCodeProduct.productId, Product.id))
     .where(
       or(
         and(
@@ -25,35 +50,70 @@ const getExpiredCode = () => {
         )
       )
     )
+    .groupBy(
+      discountCode.code,
+      discountCode.discountAmount,
+      discountCode.discountType,
+      discountCode.limit,
+      discountCode.createdAt,
+      discountCode.expiresAt,
+      discountCode.uses,
+      discountCode.isActive,
+      discountCode.allProducts
+    )
     .orderBy(asc(discountCode.expiresAt));
 };
 
 const getUnExpiredCode = () => {
   return db
-    .select()
+    .select({
+      code: discountCode.code,
+      discountAmount: discountCode.discountAmount,
+      discountType: discountCode.discountType,
+      limit: discountCode.limit,
+      createdAt: discountCode.createdAt,
+      expiresAt: discountCode.expiresAt,
+      uses: discountCode.uses,
+      isActive: discountCode.isActive,
+      allProducts: discountCode.allProducts,
+      productTitle: sql<string>`string_agg(${Product.title}, ', ')`.as(
+        "productTitle"
+      ),
+    })
     .from(discountCode)
     .innerJoin(
       discountCodeProduct,
       eq(discountCodeProduct.discountCodeId, discountCode.id)
     )
+    .leftJoin(Product, eq(discountCodeProduct.productId, Product.id))
     .where(
       or(
         and(
           gte(discountCode.expiresAt, new Date()),
-          isNull(discountCode.expiresAt)
+          isNotNull(discountCode.expiresAt)
         ),
+
         and(
           isNull(discountCode.limit),
           gte(discountCode.limit, discountCode.uses)
         )
       )
+    )
+    .orderBy(desc(discountCode.expiresAt))
+    .groupBy(
+      discountCode.code,
+      discountCode.discountAmount,
+      discountCode.discountType,
+      discountCode.limit,
+      discountCode.createdAt,
+      discountCode.expiresAt,
+      discountCode.uses,
+      discountCode.isActive,
+      discountCode.allProducts
     );
 };
-
-export type GetExpiredCode = {
+export type CouponPageProps = {
   expiredCode: Awaited<ReturnType<typeof getExpiredCode>>;
-};
-export type GetUnExpiredCode = {
   unExpiredCode: Awaited<ReturnType<typeof getUnExpiredCode>>;
 };
 
@@ -62,6 +122,6 @@ export default async function Page() {
     getExpiredCode(),
     getUnExpiredCode(),
   ]);
-
-  return <CouponPage expiredCode={expiredCode} />;
+  console.log("unExpiredCode", unExpiredCode);
+  return <CouponPage expiredCode={expiredCode} unExpiredCode={unExpiredCode} />;
 }

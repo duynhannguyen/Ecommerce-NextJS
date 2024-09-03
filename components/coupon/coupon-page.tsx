@@ -18,9 +18,14 @@ import {
 } from "@/components/ui/table";
 import Link from "next/link";
 import { Button } from "../ui/button";
-import { GetExpiredCode } from "@/app/dashboard/coupon/page";
+import { CouponPageProps } from "@/app/dashboard/coupon/page";
+import { CheckCircle } from "lucide-react";
 
-export default function CouponPage({ expiredCode }: GetExpiredCode) {
+export default function CouponPage({
+  expiredCode,
+  unExpiredCode,
+}: CouponPageProps) {
+  console.log("unExpiredCode", unExpiredCode);
   return (
     <Card>
       <CardHeader>
@@ -40,7 +45,8 @@ export default function CouponPage({ expiredCode }: GetExpiredCode) {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="w-[100px]">code</TableHead>
+              <TableHead className="w-[100px]"></TableHead>
+              <TableHead className="w-[100px]">Code</TableHead>
               <TableHead>Discount</TableHead>
               <TableHead>Expires</TableHead>
               <TableHead className="text-right">Remaining</TableHead>
@@ -50,7 +56,10 @@ export default function CouponPage({ expiredCode }: GetExpiredCode) {
           </TableHeader>
           <TableBody>
             <TableRow>
-              <TableCell className="font-medium">INV001</TableCell>
+              <TableCell className="font-medium">
+                <CheckCircle />
+              </TableCell>
+              <TableCell className="font-medium"></TableCell>
               <TableCell>Paid</TableCell>
               <TableCell>Credit Card</TableCell>
               <TableCell className="text-right">$250.00</TableCell>
