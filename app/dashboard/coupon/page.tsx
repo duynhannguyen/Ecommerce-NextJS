@@ -2,7 +2,13 @@
 
 import CouponPage from "@/components/coupon/coupon-page";
 import { db } from "@/server";
-import { discountCode, discountCodeProduct, Product } from "@/server/schema";
+import {
+  discountCode,
+  discountCodeOrder,
+  discountCodeProduct,
+  orders,
+  Product,
+} from "@/server/schema";
 import {
   and,
   asc,
@@ -19,6 +25,7 @@ import {
 const getExpiredCode = () => {
   return db
     .select({
+      discountCodeId: discountCode.id,
       code: discountCode.code,
       discountAmount: discountCode.discountAmount,
       discountType: discountCode.discountType,
@@ -59,7 +66,8 @@ const getExpiredCode = () => {
       discountCode.expiresAt,
       discountCode.uses,
       discountCode.isActive,
-      discountCode.allProducts
+      discountCode.allProducts,
+      discountCode.id
     )
     .orderBy(asc(discountCode.expiresAt));
 };
@@ -68,6 +76,7 @@ const getUnExpiredCode = () => {
   return db
     .select({
       code: discountCode.code,
+      discountCodeId: discountCode.id,
       discountAmount: discountCode.discountAmount,
       discountType: discountCode.discountType,
       limit: discountCode.limit,
@@ -109,6 +118,7 @@ const getUnExpiredCode = () => {
       discountCode.expiresAt,
       discountCode.uses,
       discountCode.isActive,
+      discountCode.id,
       discountCode.allProducts
     );
 };

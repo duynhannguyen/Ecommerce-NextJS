@@ -19,7 +19,11 @@ import {
 import Link from "next/link";
 import { Button } from "../ui/button";
 import { CouponPageProps } from "@/app/dashboard/coupon/page";
-import { CheckCircle } from "lucide-react";
+import { CheckCircle, Globe, Infinity, TicketX } from "lucide-react";
+import { randomUUID } from "crypto";
+import { formatDate } from "@/lib/format-date";
+import { formatDiscount } from "@/lib/format-discount-type";
+import { formatNumber } from "@/lib/format-number";
 
 export default function CouponPage({
   expiredCode,
@@ -45,28 +49,61 @@ export default function CouponPage({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="w-[100px]"></TableHead>
+              <TableHead className="w-[50px]"></TableHead>
               <TableHead className="w-[100px]">Code</TableHead>
               <TableHead>Discount</TableHead>
               <TableHead>Expires</TableHead>
-              <TableHead className="text-right">Remaining</TableHead>
-              <TableHead className="text-right">Orders</TableHead>
-              <TableHead className="text-right">Products</TableHead>
+              <TableHead className="text-left">Remaining</TableHead>
+              <TableHead className="text-left">Orders</TableHead>
+              <TableHead className="text-left">Products</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            <TableRow>
-              <TableCell className="font-medium">
-                <CheckCircle />
-              </TableCell>
-              <TableCell className="font-medium"></TableCell>
-              <TableCell>Paid</TableCell>
-              <TableCell>Credit Card</TableCell>
-              <TableCell className="text-right">$250.00</TableCell>
-              <TableCell className="text-right">$250.00</TableCell>
-              <TableCell className="text-right">$250.00</TableCell>
-            </TableRow>
+            {unExpiredCode ? (
+              unExpiredCode.map((code) => (
+                <TableRow key={code.discountCodeId}>
+                  <TableCell className="font-medium">
+                    <CheckCircle />
+                  </TableCell>
+                  <TableCell className="font-medium"> {code.code} </TableCell>
+                  <TableCell>
+                    {code.discountType && code.discountAmount
+                      ? formatDiscount(code.discountType, code.discountAmount)
+                      : null}
+                  </TableCell>
+                  <TableCell>
+                    {code.expiresAt === null ? (
+                      <Infinity />
+                    ) : (
+                      formatDate(code.expiresAt)
+                    )}
+                  </TableCell>
+                  <TableCell className="text-left">
+                    {code.limit === null || code.uses === null ? (
+                      <Infinity />
+                    ) : (
+                      formatNumber(code.limit - code.uses)
+                    )}
+                  </TableCell>
+                  <TableCell className="text-left">$250.00</TableCell>
+                  <TableCell className="text-left">
+                    {code.allProducts ? <Globe /> : code.productTitle}
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableCaption>
+                No available coupon now <TicketX />{" "}
+              </TableCaption>
+            )}
           </TableBody>
+          {/* <TableBody>
+            <TableRow>
+              <TableCell>
+                <div>No available coupon now</div>
+              </TableCell>
+            </TableRow>
+          </TableBody> */}
         </Table>
       </CardContent>
     </Card>
