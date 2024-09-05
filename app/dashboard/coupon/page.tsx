@@ -38,13 +38,19 @@ const getExpiredCode = () => {
       productTitle: sql<string>`string_agg(${Product.title}, ', ')`.as(
         "productTitle"
       ),
+      orders: sql<number>`cast(count(${orders.id}) as int )`,
     })
     .from(discountCode)
-    .innerJoin(
+    .leftJoin(
       discountCodeProduct,
       eq(discountCodeProduct.discountCodeId, discountCode.id)
     )
     .leftJoin(Product, eq(discountCodeProduct.productId, Product.id))
+    .leftJoin(
+      discountCodeOrder,
+      eq(discountCode.id, discountCodeOrder.discountCodeId)
+    )
+    .leftJoin(orders, eq(discountCodeOrder.orderId, orders.id))
     .where(
       or(
         and(
@@ -67,7 +73,8 @@ const getExpiredCode = () => {
       discountCode.uses,
       discountCode.isActive,
       discountCode.allProducts,
-      discountCode.id
+      discountCode.id,
+      orders.id
     )
     .orderBy(asc(discountCode.expiresAt));
 };
@@ -88,20 +95,25 @@ const getUnExpiredCode = () => {
       productTitle: sql<string>`string_agg(${Product.title}, ', ')`.as(
         "productTitle"
       ),
+      orders: sql<number>`cast(count(${orders.id}) as int )`,
     })
     .from(discountCode)
-    .innerJoin(
+    .leftJoin(
       discountCodeProduct,
       eq(discountCodeProduct.discountCodeId, discountCode.id)
     )
     .leftJoin(Product, eq(discountCodeProduct.productId, Product.id))
+    .leftJoin(
+      discountCodeOrder,
+      eq(discountCode.id, discountCodeOrder.discountCodeId)
+    )
+    .leftJoin(orders, eq(discountCodeOrder.orderId, orders.id))
     .where(
       or(
         and(
           gte(discountCode.expiresAt, new Date()),
           isNotNull(discountCode.expiresAt)
         ),
-
         and(
           isNull(discountCode.limit),
           gte(discountCode.limit, discountCode.uses)
@@ -119,7 +131,8 @@ const getUnExpiredCode = () => {
       discountCode.uses,
       discountCode.isActive,
       discountCode.id,
-      discountCode.allProducts
+      discountCode.allProducts,
+      orders.id
     );
 };
 export type CouponPageProps = {
@@ -132,6 +145,6 @@ export default async function Page() {
     getExpiredCode(),
     getUnExpiredCode(),
   ]);
-  console.log("unExpiredCode", unExpiredCode);
+
   return <CouponPage expiredCode={expiredCode} unExpiredCode={unExpiredCode} />;
 }
