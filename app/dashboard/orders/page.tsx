@@ -60,9 +60,14 @@ export default async function Page() {
           },
         },
       },
+      orderOnCode: {
+        with: {
+          codeOnOrder: true,
+        },
+      },
     },
   });
-
+  console.log("userOrders", userOrders);
   return (
     <Card>
       <CardHeader>
@@ -78,6 +83,7 @@ export default async function Page() {
               <TableHead>Total</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Created</TableHead>
+              <TableHead>Coupon</TableHead>
               <TableHead>Action</TableHead>
             </TableRow>
           </TableHeader>
@@ -101,6 +107,11 @@ export default async function Page() {
                   {formatDistance(subMinutes(order.created!, 0), new Date(), {
                     addSuffix: true,
                   })}
+                </TableCell>
+                <TableCell>
+                  {order.orderOnCode.length === 0
+                    ? "No coupon applied"
+                    : order.orderOnCode[0].codeOnOrder.code}
                 </TableCell>
                 <TableCell>
                   <Dialog>
