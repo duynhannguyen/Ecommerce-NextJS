@@ -51,3 +51,10 @@ export type TotalOrders = InferResultType<
     productVariants: { with: { variantsImages: true } };
   }
 >;
+
+export type ProductWithCode = InferResultType<
+  "discountCodeProduct",
+  {
+    codeOnProduct: true;
+  }
+>;

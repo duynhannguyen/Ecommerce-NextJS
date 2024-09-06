@@ -1,4 +1,5 @@
 import AddCart from "@/components/cart/add-cart";
+import Coupon from "@/components/products/coupon";
 import ProductPick from "@/components/products/product-pick";
 import { ProductShowCase } from "@/components/products/product-showcase";
 import ProductType from "@/components/products/product-type";
@@ -46,11 +47,16 @@ export default async function Page({ params }: { params: { slug: string } }) {
               variantsTags: true,
             },
           },
+          productOnCode: {
+            with: {
+              codeOnProduct: true,
+            },
+          },
         },
       },
     },
   });
-
+  console.log("variant", variant?.product.productOnCode);
   if (variant) {
     const reviewAvg = getReviewAvarage(
       variant?.product.reviews.map((rating) => rating.rating)
@@ -96,6 +102,9 @@ export default async function Page({ params }: { params: { slug: string } }) {
                 />
               ))}
             </div>
+
+            <Coupon couponList={variant.product.productOnCode} />
+
             <AddCart />
           </div>
         </section>
