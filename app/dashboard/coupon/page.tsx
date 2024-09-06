@@ -110,10 +110,8 @@ const getUnExpiredCode = () => {
     .leftJoin(orders, eq(discountCodeOrder.orderId, orders.id))
     .where(
       or(
-        and(
-          gte(discountCode.expiresAt, new Date()),
-          isNotNull(discountCode.expiresAt)
-        ),
+        isNull(discountCode.expiresAt),
+        gte(discountCode.expiresAt, new Date()),
         and(
           isNull(discountCode.limit),
           gte(discountCode.limit, discountCode.uses)

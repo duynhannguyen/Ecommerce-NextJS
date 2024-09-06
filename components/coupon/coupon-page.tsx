@@ -41,12 +41,38 @@ import {
 import { formatDate } from "@/lib/format-date";
 import { formatDiscount } from "@/lib/format-discount-type";
 import { formatNumber } from "@/lib/format-number";
+import { toggleActiveCode } from "@/server/actions/toggle-active-code";
+import { toast } from "sonner";
+import { deleteDiscountCode } from "@/server/actions/delete-code";
 
 export default function CouponPage({
   expiredCode,
   unExpiredCode,
 }: CouponPageProps) {
   console.log("unExpiredCode", unExpiredCode);
+
+  const toggleDiscountCode = async (id: string, status: boolean) => {
+    console.log(id, status);
+    const toggleCode = await toggleActiveCode({ id, status });
+    console.log("toggleCode", toggleCode);
+    if (toggleCode?.data?.success) {
+      return toast.success(toggleCode.data.success);
+    }
+    if (toggleCode?.data?.error) {
+      return toast.error(toggleCode.data.success);
+    }
+  };
+
+  const HandleDeleteCode = async (id: string) => {
+    const deleteCode = await deleteDiscountCode({ id });
+    if (deleteCode?.data?.success) {
+      return toast.success(deleteCode.data.success);
+    }
+    if (deleteCode?.data?.error) {
+      return toast.success(deleteCode.data.error);
+    }
+  };
+
   return (
     <div className=" flex flex-col gap-5">
       <Card>
@@ -83,9 +109,9 @@ export default function CouponPage({
                   <TableRow key={code.discountCodeId}>
                     <TableCell className="font-medium">
                       {code.isActive ? (
-                        <CircleCheck className="text-green-300" size={16} />
+                        <CircleCheck className="text-green-500" size={16} />
                       ) : (
-                        <CircleX className="text-red-300" size={16} />
+                        <CircleX className="text-red-500" size={16} />
                       )}
                     </TableCell>
                     <TableCell className="font-medium"> {code.code} </TableCell>
@@ -122,12 +148,39 @@ export default function CouponPage({
                         </DropdownMenuTrigger>
                         <DropdownMenuContent>
                           {code.isActive ? (
-                            <DropdownMenuItem>Deactive</DropdownMenuItem>
+                            <DropdownMenuItem
+                              className="cursor-pointer"
+                              onClick={() =>
+                                toggleDiscountCode(
+                                  code.discountCodeId,
+                                  code.isActive as boolean
+                                )
+                              }
+                            >
+                              Deactive
+                            </DropdownMenuItem>
                           ) : (
-                            <DropdownMenuItem>Active</DropdownMenuItem>
+                            <DropdownMenuItem
+                              className="cursor-pointer"
+                              onClick={() =>
+                                toggleDiscountCode(
+                                  code.discountCodeId,
+                                  code.isActive as boolean
+                                )
+                              }
+                            >
+                              Active
+                            </DropdownMenuItem>
                           )}
 
-                          <DropdownMenuItem>Delete</DropdownMenuItem>
+                          <DropdownMenuItem
+                            className="  dark:focus:bg-destructive focus:bg-destructive/50 cursor-pointer"
+                            onClick={() =>
+                              HandleDeleteCode(code.discountCodeId)
+                            }
+                          >
+                            Delete
+                          </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </TableCell>
@@ -146,6 +199,7 @@ export default function CouponPage({
       <Card>
         <CardHeader>
           <CardTitle>Expires coupon</CardTitle>
+          <CardDescription> Your expired coupon ❌ </CardDescription>
         </CardHeader>
         <CardContent>
           <Table>
@@ -166,7 +220,9 @@ export default function CouponPage({
                 expiredCode.map((code) => (
                   <TableRow key={code.discountCodeId}>
                     <TableCell className="font-medium">
-                      {code.isActive ? (
+                      {code.isActive &&
+                      code.expiresAt !== null &&
+                      code.expiresAt > new Date() ? (
                         <CircleCheck className="text-green-300" size={16} />
                       ) : (
                         <CircleX className="text-red-300" size={16} />
@@ -205,7 +261,14 @@ export default function CouponPage({
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent>
-                            <DropdownMenuLabel>Delete</DropdownMenuLabel>
+                            <DropdownMenuLabel
+                              onClick={() =>
+                                HandleDeleteCode(code.discountCodeId)
+                              }
+                              className="dark:focus:bg-destructive focus:bg-destructive/50 cursor-pointer"
+                            >
+                              Delete
+                            </DropdownMenuLabel>
                           </DropdownMenuContent>
                         </DropdownMenu>
                       )}

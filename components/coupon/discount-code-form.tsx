@@ -54,13 +54,15 @@ export default function DiscountCodeForm({
 
   const { execute, status } = useAction(addDiscountCode, {
     onExecute: () => {
-      toast.loading("Creating coupon...", { duration: 1 });
+      toast.loading("Creating coupon...", { duration: 500 });
     },
     onSuccess: ({ data }) => {
       if (data?.success) {
+        toast.dismiss();
         toast.success(data.success, { duration: 500 });
       }
       if (data?.error) {
+        toast.dismiss();
         toast.error(data.error, { duration: 500 });
       }
     },
