@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import { discountCode } from "./infer-type";
 export type Variant = {
   variantId: number;
   quantity: number;
@@ -24,14 +25,18 @@ export type CartState = {
   clearCart: () => void;
   cartOpen: boolean;
   setCartOpen: (value: boolean) => void;
+  discountCode: discountCode[];
+  setDiscountCode: (code: discountCode[]) => void;
 };
 
 export const useCartStore = create<CartState>()(
   persist(
     (set) => ({
       cart: [],
+      discountCode: [],
       checkoutProgress: "cart-page",
       cartOpen: false,
+      setDiscountCode: (value) => set({ discountCode: value }),
       setCartOpen: (value) => set({ cartOpen: value }),
       setCheckoutProgress: (value) =>
         set((state) => ({ checkoutProgress: value })),

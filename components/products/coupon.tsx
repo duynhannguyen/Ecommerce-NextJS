@@ -5,8 +5,6 @@ import {
   Carousel,
   CarouselContent,
   CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
 } from "@/components/ui/carousel";
 import { ProductWithCode } from "@/lib/infer-type";
 import { Clipboard, ClipboardCheck } from "lucide-react";
@@ -15,7 +13,7 @@ import { useState } from "react";
 export default function Coupon({
   couponList,
 }: {
-  couponList: ProductWithCode[];
+  couponList?: ProductWithCode[];
 }) {
   const [isCoppy, setIsCoppy] = useState("");
   const onCoppyClipCode = (code: string) => {
@@ -30,11 +28,11 @@ export default function Coupon({
     <div>
       <div className="my-2">
         {" "}
-        {couponList.length === 0
+        {couponList?.length === 0
           ? "This product have no coupons 😓"
           : "This product have coupons 🎉"}{" "}
       </div>
-      {couponList.length > 0 && (
+      {couponList && (
         <Carousel
           opts={{
             align: "end",

@@ -14,14 +14,17 @@ import { useAction } from "next-safe-action/hooks";
 import { createOrder } from "@/server/actions/create-order";
 import { toast } from "sonner";
 import FormError from "../auth/form-error";
+import { formatPrice } from "@/lib/format-price";
+import { Input } from "../ui/input";
+import { Label } from "../ui/label";
 
 export default function PaymentForm({ totalPrice }: { totalPrice: number }) {
   const stripe = useStripe();
   const elements = useElements();
-  const { cart, setCheckoutProgress, clearCart } = useCartStore();
+  const { cart, setCheckoutProgress, clearCart, discountCode } = useCartStore();
+  const [coupon, setCoupon] = useState("");
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-
   const { execute, status } = useAction(createOrder, {
     onSuccess: (data) => {
       if (data.data?.error) {
@@ -36,6 +39,7 @@ export default function PaymentForm({ totalPrice }: { totalPrice: number }) {
       }
     },
   });
+  // const handleApplyCoupon = (e) => {};
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -105,11 +109,27 @@ export default function PaymentForm({ totalPrice }: { totalPrice: number }) {
         }}
       />
       <FormError message={errorMessage} />
+      <div className=" space-y-2  ">
+        <Label htmlFor="discountCode" className="text-sm font-normal ">
+          Coupon
+        </Label>
+        <div className="flex gap-3 items-center ">
+          <Input
+            className="max-w-sm "
+            id="discountCode"
+            name="discountCode"
+            type="text"
+            // value={}
+            // onChange={}
+          />
+          <Button type="button">Apply</Button>
+        </div>
+      </div>
       <Button
         className="  my-4 w-full "
         disabled={!stripe || !elements || loading}
       >
-        {loading ? "Processing..." : "Pay now"}
+        {loading ? "Processing..." : `Purchase ${formatPrice(totalPrice)} `}
       </Button>
     </form>
   );

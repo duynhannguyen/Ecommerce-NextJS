@@ -58,3 +58,4 @@ export type ProductWithCode = InferResultType<
     codeOnProduct: true;
   }
 >;
+export type discountCode = InferResultType<"discountCode">;

@@ -311,15 +311,15 @@ export const discountCode = pgTable("discountCode", {
     .notNull()
     .$defaultFn(() => crypto.randomUUID())
     .primaryKey(),
-  discountAmount: integer("discountAmount"),
-  discountType: DiscountType("discountType"),
+  discountAmount: integer("discountAmount").notNull(),
+  discountType: DiscountType("discountType").notNull(),
   code: text("code").notNull().unique(),
   limit: integer("limit"),
-  createdAt: timestamp("createdAt").defaultNow(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
   expiresAt: timestamp("expires"),
   uses: integer("uses").default(0),
-  isActive: boolean("isActive").default(true),
-  allProducts: boolean("allProducts").default(false),
+  isActive: boolean("isActive").default(true).notNull(),
+  allProducts: boolean("allProducts").default(false).notNull(),
 });
 
 export const discountCodeRlations = relations(discountCode, ({ many }) => ({

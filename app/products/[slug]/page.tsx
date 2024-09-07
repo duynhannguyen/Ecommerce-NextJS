@@ -57,6 +57,19 @@ export default async function Page({ params }: { params: { slug: string } }) {
     },
   });
   console.log("variant", variant?.product.productOnCode);
+  const availableCode = variant?.product.productOnCode.filter((code) => {
+    const { codeOnProduct } = code;
+    if (
+      (codeOnProduct.expiresAt === null ||
+        codeOnProduct.expiresAt > new Date()) &&
+      (codeOnProduct.limit === null ||
+        (codeOnProduct.uses !== null &&
+          codeOnProduct.limit > codeOnProduct.uses))
+    ) {
+      return code;
+    }
+  });
+  console.log("availableCode", availableCode);
   if (variant) {
     const reviewAvg = getReviewAvarage(
       variant?.product.reviews.map((rating) => rating.rating)
@@ -103,7 +116,7 @@ export default async function Page({ params }: { params: { slug: string } }) {
               ))}
             </div>
 
-            <Coupon couponList={variant.product.productOnCode} />
+            <Coupon couponList={availableCode} />
 
             <AddCart />
           </div>

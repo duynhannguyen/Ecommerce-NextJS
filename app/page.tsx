@@ -14,12 +14,12 @@ export default async function Home() {
     },
     orderBy: (productVariants, { desc }) => [desc(productVariants.id)],
   });
-
+  const discountCode = await db.query.discountCode.findMany();
   return (
     <main>
       <Algolia />
       <ProductTags />
-      <Products variants={data} />
+      <Products variants={data} discountCodeList={discountCode} />
     </main>
   );
 }

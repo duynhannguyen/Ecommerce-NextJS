@@ -62,7 +62,7 @@ export default function CartItems() {
             </TableHeader>
             <TableBody>
               {cart.map((item) => (
-                <TableRow key={item.id}>
+                <TableRow key={item.id + crypto.randomUUID()}>
                   <TableCell>{item.name}</TableCell>
                   <TableCell>{formatPrice(item.price)}</TableCell>
                   <TableCell>
