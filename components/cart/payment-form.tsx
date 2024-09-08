@@ -42,7 +42,24 @@ export default function PaymentForm({ totalPrice }: { totalPrice: number }) {
     },
   });
   const handleApplyCoupon = () => {
-    console.log("e", coupon);
+    const isCouponExpires = discountCode.find(
+      (code) => code.discountCode.code === coupon
+    );
+    if (!isCouponExpires) {
+      return setErrorMessage("Coupon is not available");
+    }
+    if (
+      !(
+        isCouponExpires.discountCode.expiresAt === null ||
+        isCouponExpires.discountCode.expiresAt > new Date()
+      ) ||
+      (isCouponExpires.discountCode.uses !== null &&
+        isCouponExpires.discountCode.limit !== null &&
+        isCouponExpires.discountCode.limit < isCouponExpires.discountCode.uses)
+    ) {
+      return setErrorMessage("Coupon is expired");
+    }
+    setErrorMessage("ok");
   };
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -112,7 +129,6 @@ export default function PaymentForm({ totalPrice }: { totalPrice: number }) {
           mode: "shipping",
         }}
       />
-      <FormError message={errorMessage} />
       <div className=" space-y-2  ">
         <Label htmlFor="discountCode" className="text-sm font-normal ">
           Coupon
@@ -130,6 +146,8 @@ export default function PaymentForm({ totalPrice }: { totalPrice: number }) {
             Apply
           </Button>
         </div>
+
+        <FormError message={errorMessage} />
       </div>
       <Button
         className="  my-4 w-full "
