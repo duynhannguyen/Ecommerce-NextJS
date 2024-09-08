@@ -8,7 +8,7 @@ import {
   useStripe,
 } from "@stripe/react-stripe-js";
 import { Button } from "../ui/button";
-import { useState } from "react";
+import { ChangeEvent, useState } from "react";
 import { createPaymentIntent } from "@/server/actions/create-payment-intent";
 import { useAction } from "next-safe-action/hooks";
 import { createOrder } from "@/server/actions/create-order";
@@ -25,6 +25,8 @@ export default function PaymentForm({ totalPrice }: { totalPrice: number }) {
   const [coupon, setCoupon] = useState("");
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  console.log("discountCode", discountCode);
+  console.log("cart", cart);
   const { execute, status } = useAction(createOrder, {
     onSuccess: (data) => {
       if (data.data?.error) {
@@ -39,7 +41,9 @@ export default function PaymentForm({ totalPrice }: { totalPrice: number }) {
       }
     },
   });
-  // const handleApplyCoupon = (e) => {};
+  const handleApplyCoupon = () => {
+    console.log("e", coupon);
+  };
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -119,10 +123,12 @@ export default function PaymentForm({ totalPrice }: { totalPrice: number }) {
             id="discountCode"
             name="discountCode"
             type="text"
-            // value={}
-            // onChange={}
+            value={coupon}
+            onChange={(e) => setCoupon(e.target.value)}
           />
-          <Button type="button">Apply</Button>
+          <Button onClick={() => handleApplyCoupon()} type="button">
+            Apply
+          </Button>
         </div>
       </div>
       <Button

@@ -69,7 +69,6 @@ export default async function Page({ params }: { params: { slug: string } }) {
       return code;
     }
   });
-  console.log("availableCode", availableCode);
   if (variant) {
     const reviewAvg = getReviewAvarage(
       variant?.product.reviews.map((rating) => rating.rating)

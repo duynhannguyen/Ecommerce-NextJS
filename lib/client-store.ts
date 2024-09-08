@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { discountCode } from "./infer-type";
+import { unExpiredCode } from "@/app/page";
 export type Variant = {
   variantId: number;
   quantity: number;
@@ -25,8 +26,8 @@ export type CartState = {
   clearCart: () => void;
   cartOpen: boolean;
   setCartOpen: (value: boolean) => void;
-  discountCode: discountCode[];
-  setDiscountCode: (code: discountCode[]) => void;
+  discountCode: unExpiredCode;
+  setDiscountCode: (code: unExpiredCode) => void;
 };
 
 export const useCartStore = create<CartState>()(

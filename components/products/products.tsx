@@ -1,6 +1,6 @@
 "use client";
 
-import { discountCode, VariantsWithProduct } from "@/lib/infer-type";
+import { VariantsWithProduct } from "@/lib/infer-type";
 import Image from "next/image";
 import Link from "next/link";
 import { Badge } from "../ui/badge";
@@ -8,10 +8,11 @@ import { formatPrice } from "@/lib/format-price";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useMemo } from "react";
 import { useCartStore } from "@/lib/client-store";
+import { unExpiredCode } from "@/app/page";
 
 type ProductType = {
   variants: VariantsWithProduct[];
-  discountCodeList: discountCode[];
+  discountCodeList: unExpiredCode;
 };
 export const Products = ({ variants, discountCodeList }: ProductType) => {
   const params = useSearchParams();
@@ -19,7 +20,7 @@ export const Products = ({ variants, discountCodeList }: ProductType) => {
   const { setDiscountCode } = useCartStore();
   useEffect(() => {
     return setDiscountCode(discountCodeList);
-  }, [discountCodeList]);
+  }, []);
   const filterByTag = useMemo(() => {
     if (paramTag && variants) {
       return variants.filter((variant) =>

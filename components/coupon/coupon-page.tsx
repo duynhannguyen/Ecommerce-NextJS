@@ -12,7 +12,6 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
@@ -29,8 +28,6 @@ import Link from "next/link";
 import { Button } from "../ui/button";
 import { CouponPageProps } from "@/app/dashboard/coupon/page";
 import {
-  CheckCircle,
-  Circle,
   CircleCheck,
   CircleX,
   Globe,
