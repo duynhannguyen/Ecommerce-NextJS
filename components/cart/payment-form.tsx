@@ -17,6 +17,7 @@ import FormError from "../auth/form-error";
 import { formatPrice } from "@/lib/format-price";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
+import { verifyDiscountCode } from "@/server/actions/verify-discount-code";
 
 export default function PaymentForm({ totalPrice }: { totalPrice: number }) {
   const stripe = useStripe();
@@ -25,41 +26,58 @@ export default function PaymentForm({ totalPrice }: { totalPrice: number }) {
   const [coupon, setCoupon] = useState("");
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const productInCartId = cart.map((cartItem) => cartItem.id);
   console.log("discountCode", discountCode);
   console.log("cart", cart);
-  const { execute, status } = useAction(createOrder, {
-    onSuccess: (data) => {
-      if (data.data?.error) {
-        toast.error(data.data?.error);
-      }
+  const { execute: createOrderExecute, status: createOrderStatus } = useAction(
+    createOrder,
+    {
+      onSuccess: (data) => {
+        if (data.data?.error) {
+          toast.error(data.data?.error);
+        }
 
-      if (data.data?.success) {
-        setLoading(false);
-        setCheckoutProgress("confirmation-page");
-        clearCart();
-        toast.success(data.data.success);
-      }
-    },
-  });
-  const handleApplyCoupon = () => {
-    const isCouponExpires = discountCode.find(
-      (code) => code.discountCode.code === coupon
-    );
-    if (!isCouponExpires) {
-      return setErrorMessage("Coupon is not available");
+        if (data.data?.success) {
+          setLoading(false);
+          setCheckoutProgress("confirmation-page");
+          clearCart();
+          toast.success(data.data.success);
+        }
+      },
     }
-    if (
-      !(
-        isCouponExpires.discountCode.expiresAt === null ||
-        isCouponExpires.discountCode.expiresAt > new Date()
-      ) ||
-      (isCouponExpires.discountCode.uses !== null &&
-        isCouponExpires.discountCode.limit !== null &&
-        isCouponExpires.discountCode.limit < isCouponExpires.discountCode.uses)
-    ) {
-      return setErrorMessage("Coupon is expired");
+  );
+  const { execute: verifyCodeExecute, status: verifyCodeSatus } = useAction(
+    verifyDiscountCode,
+    {
+      onSuccess: (data) => {
+        console.log("data", data);
+      },
     }
-    setErrorMessage("ok");
+  );
+
+  const handleApplyCoupon = async () => {
+    verifyCodeExecute({
+      coupon,
+      cart: productInCartId,
+    });
+    // const isCouponExpires = discountCode.find(
+    //   (code) => code.discountCode.code === coupon
+    // );
+    // if (!isCouponExpires) {
+    //   return setErrorMessage("Coupon is not available");
+    // }
+    // if (
+    //   !(
+    //     isCouponExpires.discountCode.expiresAt === null ||
+    //     isCouponExpires.discountCode.expiresAt > new Date()
+    //   ) ||
+    //   (isCouponExpires.discountCode.uses !== null &&
+    //     isCouponExpires.discountCode.limit !== null &&
+    //     isCouponExpires.discountCode.limit < isCouponExpires.discountCode.uses)
+    // ) {
+    //   return setErrorMessage("Coupon is expired");
+    // }
+    // setErrorMessage("ok");
   };
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -108,7 +126,7 @@ export default function PaymentForm({ totalPrice }: { totalPrice: number }) {
         return;
       } else {
         setLoading(false);
-        execute({
+        createOrderExecute({
           status: "pending",
           total: totalPrice,
           paymentIntentId: data.data.success.paymentIntentId,
