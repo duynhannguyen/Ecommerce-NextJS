@@ -8,7 +8,7 @@ import {
   useStripe,
 } from "@stripe/react-stripe-js";
 import { Button } from "../ui/button";
-import { ChangeEvent, useState } from "react";
+import { useState } from "react";
 import { createPaymentIntent } from "@/server/actions/create-payment-intent";
 import { useAction } from "next-safe-action/hooks";
 import { createOrder } from "@/server/actions/create-order";
@@ -17,7 +17,9 @@ import FormError from "../auth/form-error";
 import { formatPrice } from "@/lib/format-price";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
+import { motion } from "framer-motion";
 import { verifyDiscountCode } from "@/server/actions/verify-discount-code";
+import { cn } from "@/lib/utils";
 
 export default function PaymentForm({ totalPrice }: { totalPrice: number }) {
   const stripe = useStripe();
@@ -26,8 +28,8 @@ export default function PaymentForm({ totalPrice }: { totalPrice: number }) {
   const [coupon, setCoupon] = useState("");
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [newPrice, setNewPrice] = useState(0);
   const productInCartId = cart.map((cartItem) => cartItem.id);
-  // console.log("discountCode", discountCode);
   console.log("cart", cart);
   const { execute: createOrderExecute, status: createOrderStatus } = useAction(
     createOrder,
@@ -52,12 +54,12 @@ export default function PaymentForm({ totalPrice }: { totalPrice: number }) {
       onSuccess: (data) => {
         if (data.data?.success) {
           const discountCode = data.data?.success;
-          console.log("data.data.success", data.data.success);
-          newDiscountPrice({
+          const newPrice = newDiscountPrice({
             amount: discountCode.discountCode.discountAmount,
             type: discountCode.discountCode.discountType,
             productId: discountCode.discountCodeProduct?.productId,
           });
+          setNewPrice(newPrice);
         }
         if (data.data?.error) {
           setErrorMessage(data.data.error);
@@ -71,9 +73,7 @@ export default function PaymentForm({ totalPrice }: { totalPrice: number }) {
   ) => {
     switch (discountType) {
       case "Percented":
-        return new Intl.NumberFormat("vi", {
-          style: "percent",
-        }).format(discountAmount / 100);
+        return 1 - discountAmount / 100;
       case "Fixed":
         return discountAmount;
       default:
@@ -93,7 +93,13 @@ export default function PaymentForm({ totalPrice }: { totalPrice: number }) {
     productId?: number;
   }) => {
     const newDiscountAmount = formatType(type, amount);
-    console.log("newDiscountAmount", newDiscountAmount);
+    const newDiscountPrice = cart.reduce((acc, item) => {
+      if (item.id === productId) {
+        return acc + item.price * item.variant.quantity * newDiscountAmount;
+      }
+      return acc + item.price * item.variant.quantity;
+    }, 0);
+    return newDiscountPrice;
   };
 
   const handleApplyCoupon = async () => {
@@ -135,7 +141,7 @@ export default function PaymentForm({ totalPrice }: { totalPrice: number }) {
     }
 
     const data = await createPaymentIntent({
-      amount: totalPrice,
+      amount: newPrice || totalPrice,
       currency: "vnd",
       cart: cart.map((item) => ({
         quatity: item.variant.quantity,
@@ -169,7 +175,7 @@ export default function PaymentForm({ totalPrice }: { totalPrice: number }) {
         setLoading(false);
         createOrderExecute({
           status: "pending",
-          total: totalPrice,
+          total: newPrice || totalPrice,
           paymentIntentId: data.data.success.paymentIntentId,
           product: cart.map((item) => ({
             productId: item.id,
@@ -212,7 +218,32 @@ export default function PaymentForm({ totalPrice }: { totalPrice: number }) {
         className="  my-4 w-full "
         disabled={!stripe || !elements || loading}
       >
-        {loading ? "Processing..." : `Purchase ${formatPrice(totalPrice)} `}
+        {loading ? (
+          "Processing..."
+        ) : (
+          <div className="flex items-center justify-center text-sm  ">
+            Purchase
+            {newPrice ? (
+              <motion.div
+                animate={{ scale: 1 }}
+                initial={{ scale: 0 }}
+                transition={{ duration: 0.3, ease: "easeInOut" }}
+                className=" ml-2"
+              >
+                {formatPrice(newPrice)}
+              </motion.div>
+            ) : null}
+            <div
+              className={cn(
+                newPrice
+                  ? "line-through scale-75 transition-all duration-300 ease-in-out  "
+                  : "ml-1"
+              )}
+            >
+              {formatPrice(totalPrice)}
+            </div>
+          </div>
+        )}
       </Button>
     </form>
   );
