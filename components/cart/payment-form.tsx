@@ -27,7 +27,7 @@ export default function PaymentForm({ totalPrice }: { totalPrice: number }) {
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const productInCartId = cart.map((cartItem) => cartItem.id);
-  console.log("discountCode", discountCode);
+  // console.log("discountCode", discountCode);
   console.log("cart", cart);
   const { execute: createOrderExecute, status: createOrderStatus } = useAction(
     createOrder,
@@ -50,10 +50,51 @@ export default function PaymentForm({ totalPrice }: { totalPrice: number }) {
     verifyDiscountCode,
     {
       onSuccess: (data) => {
-        console.log("data", data);
+        if (data.data?.success) {
+          const discountCode = data.data?.success;
+          console.log("data.data.success", data.data.success);
+          newDiscountPrice({
+            amount: discountCode.discountCode.discountAmount,
+            type: discountCode.discountCode.discountType,
+            productId: discountCode.discountCodeProduct?.productId,
+          });
+        }
+        if (data.data?.error) {
+          setErrorMessage(data.data.error);
+        }
       },
     }
   );
+  const formatType = (
+    discountType: "Percented" | "Fixed",
+    discountAmount: number
+  ) => {
+    switch (discountType) {
+      case "Percented":
+        return new Intl.NumberFormat("vi", {
+          style: "percent",
+        }).format(discountAmount / 100);
+      case "Fixed":
+        return discountAmount;
+      default:
+        throw new Error(
+          `Invaild discount code type ${discountType satisfies never} `
+        );
+    }
+  };
+
+  const newDiscountPrice = ({
+    amount,
+    type,
+    productId,
+  }: {
+    amount: number;
+    type: "Percented" | "Fixed";
+    productId?: number;
+  }) => {
+    const newDiscountAmount = formatType(type, amount);
+    console.log("newDiscountAmount", newDiscountAmount);
+  };
 
   const handleApplyCoupon = async () => {
     verifyCodeExecute({

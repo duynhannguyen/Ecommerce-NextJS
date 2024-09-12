@@ -109,10 +109,12 @@ const getUnExpiredCode = () => {
     )
     .leftJoin(orders, eq(discountCodeOrder.orderId, orders.id))
     .where(
-      or(
-        isNull(discountCode.expiresAt),
-        gte(discountCode.expiresAt, new Date()),
-        and(
+      and(
+        or(
+          isNull(discountCode.expiresAt),
+          gte(discountCode.expiresAt, new Date())
+        ),
+        or(
           isNull(discountCode.limit),
           gte(discountCode.limit, discountCode.uses)
         )
@@ -143,6 +145,6 @@ export default async function Page() {
     getExpiredCode(),
     getUnExpiredCode(),
   ]);
-
+  console.log("unExpiredCode", unExpiredCode);
   return <CouponPage expiredCode={expiredCode} unExpiredCode={unExpiredCode} />;
 }
