@@ -8,7 +8,7 @@ import {
   useStripe,
 } from "@stripe/react-stripe-js";
 import { Button } from "../ui/button";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { createPaymentIntent } from "@/server/actions/create-payment-intent";
 import { useAction } from "next-safe-action/hooks";
 import { createOrder } from "@/server/actions/create-order";
@@ -20,14 +20,17 @@ import { Label } from "../ui/label";
 import { motion } from "framer-motion";
 import { verifyDiscountCode } from "@/server/actions/verify-discount-code";
 import { cn } from "@/lib/utils";
+import FormSuccess from "../auth/form-success";
 
 export default function PaymentForm({ totalPrice }: { totalPrice: number }) {
   const stripe = useStripe();
   const elements = useElements();
   const { cart, setCheckoutProgress, clearCart, discountCode } = useCartStore();
+
   const [coupon, setCoupon] = useState("");
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
   const [newPrice, setNewPrice] = useState(0);
   const productInCartId = cart.map((cartItem) => cartItem.id);
   console.log("cart", cart);
@@ -59,7 +62,13 @@ export default function PaymentForm({ totalPrice }: { totalPrice: number }) {
             type: discountCode.discountCode.discountType,
             productId: discountCode.discountCodeProduct?.productId,
           });
+          const appliedProduct = cart.find(
+            (item) => item.id === discountCode.discountCodeProduct?.productId
+          );
           setNewPrice(newPrice);
+          setSuccessMessage(
+            `Apply coupon to product ${appliedProduct?.name} success `
+          );
         }
         if (data.data?.error) {
           setErrorMessage(data.data.error);
@@ -94,8 +103,11 @@ export default function PaymentForm({ totalPrice }: { totalPrice: number }) {
   }) => {
     const newDiscountAmount = formatType(type, amount);
     const newDiscountPrice = cart.reduce((acc, item) => {
-      if (item.id === productId) {
+      if (item.id === productId && type === "Percented") {
         return acc + item.price * item.variant.quantity * newDiscountAmount;
+      }
+      if (item.id === productId && type === "Fixed") {
+        return acc + item.price * item.variant.quantity - newDiscountAmount;
       }
       return acc + item.price * item.variant.quantity;
     }, 0);
@@ -103,6 +115,11 @@ export default function PaymentForm({ totalPrice }: { totalPrice: number }) {
   };
 
   const handleApplyCoupon = async () => {
+    if (!coupon) {
+      return;
+    }
+    setErrorMessage("");
+    setSuccessMessage("");
     verifyCodeExecute({
       coupon,
       cart: productInCartId,
@@ -207,12 +224,17 @@ export default function PaymentForm({ totalPrice }: { totalPrice: number }) {
             value={coupon}
             onChange={(e) => setCoupon(e.target.value)}
           />
-          <Button onClick={() => handleApplyCoupon()} type="button">
+          <Button
+            disabled={coupon === ""}
+            onClick={() => handleApplyCoupon()}
+            type="button"
+          >
             Apply
           </Button>
         </div>
 
         <FormError message={errorMessage} />
+        <FormSuccess message={successMessage} />
       </div>
       <Button
         className="  my-4 w-full "
