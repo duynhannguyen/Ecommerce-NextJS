@@ -28,6 +28,7 @@ export default function PaymentForm({ totalPrice }: { totalPrice: number }) {
   const { cart, setCheckoutProgress, clearCart, discountCode } = useCartStore();
 
   const [coupon, setCoupon] = useState("");
+  const [couponId, setCouponId] = useState("");
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
@@ -66,6 +67,7 @@ export default function PaymentForm({ totalPrice }: { totalPrice: number }) {
             (item) => item.id === discountCode.discountCodeProduct?.productId
           );
           setNewPrice(newPrice);
+          setCouponId(discountCode.discountCode.id);
           if (discountCode.discountCode.allProducts) {
             return setSuccessMessage(`Apply coupon successfully `);
           }
@@ -173,6 +175,7 @@ export default function PaymentForm({ totalPrice }: { totalPrice: number }) {
 
     const data = await createPaymentIntent({
       amount: newPrice || totalPrice,
+      discountCodeId: couponId,
       currency: "vnd",
       cart: cart.map((item) => ({
         quatity: item.variant.quantity,

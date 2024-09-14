@@ -68,7 +68,7 @@ export default async function Page() {
     },
     orderBy: [desc(orders.created)],
   });
-  console.log("userOrders", userOrders);
+
   return (
     <Card>
       <CardHeader>

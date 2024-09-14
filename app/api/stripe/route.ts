@@ -1,6 +1,6 @@
 import { db } from "@/server";
-import { orders } from "@/server/schema";
-import { eq } from "drizzle-orm";
+import { discountCode, orders } from "@/server/schema";
+import { eq, sql } from "drizzle-orm";
 import { type NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 
@@ -36,6 +36,7 @@ export async function POST(req: NextRequest) {
         { expand: ["latest_charge"] }
       );
       const charge = retrieveOrder.latest_charge as Stripe.Charge;
+      const discountCodeId = charge.metadata.discountCodeId;
       const customer = await db
         .update(orders)
         .set({
@@ -44,6 +45,13 @@ export async function POST(req: NextRequest) {
         })
         .where(eq(orders.paymentIntentId, event.data.object.id))
         .returning();
+      const updateCouponUse = await db
+        .update(discountCode)
+        .set({
+          uses: sql`${discountCode.uses} + 1`,
+        })
+        .where(eq(discountCode.id, discountCodeId));
+
       // Then define and call a function to handle the event product.created
       break;
 

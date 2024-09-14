@@ -18,10 +18,17 @@ import CartMessage from "./cart-message";
 import Payment from "./payment";
 import OrderConfirmed from "./order-confirmed";
 import CartProgress from "./cart-progress";
+import { useEffect } from "react";
 
 export default function CartDrawer() {
-  const { cart, checkoutProgress, cartOpen, setCartOpen } = useCartStore();
-
+  const { cart, checkoutProgress, setCheckoutProgress, cartOpen, setCartOpen } =
+    useCartStore();
+  useEffect(() => {
+    if (cart.length !== 0 && checkoutProgress === "confirmation-page") {
+      return setCheckoutProgress("cart-page");
+    }
+    return;
+  }, [checkoutProgress]);
   return (
     <Drawer open={cartOpen} onOpenChange={setCartOpen}>
       <DrawerTrigger>
