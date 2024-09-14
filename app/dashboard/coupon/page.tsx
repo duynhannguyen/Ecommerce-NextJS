@@ -145,6 +145,5 @@ export default async function Page() {
     getExpiredCode(),
     getUnExpiredCode(),
   ]);
-  console.log("unExpiredCode", unExpiredCode);
   return <CouponPage expiredCode={expiredCode} unExpiredCode={unExpiredCode} />;
 }

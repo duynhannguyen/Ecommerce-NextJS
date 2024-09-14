@@ -41,7 +41,7 @@ export const addDiscountCode = action
             allProducts: allProduct,
           })
           .returning();
-        console.log("saveCodeToProduct", products);
+
         const saveCodeToProduct = products?.map(async (productId) => {
           const saving = await db.insert(discountCodeProduct).values({
             discountCodeId: saveCodeToDb[0].id,

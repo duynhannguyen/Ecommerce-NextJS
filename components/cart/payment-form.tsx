@@ -66,6 +66,9 @@ export default function PaymentForm({ totalPrice }: { totalPrice: number }) {
             (item) => item.id === discountCode.discountCodeProduct?.productId
           );
           setNewPrice(newPrice);
+          if (discountCode.discountCode.allProducts) {
+            return setSuccessMessage(`Apply coupon successfully `);
+          }
           setSuccessMessage(
             `Apply coupon to product ${appliedProduct?.name} success `
           );
@@ -102,7 +105,18 @@ export default function PaymentForm({ totalPrice }: { totalPrice: number }) {
     productId?: number;
   }) => {
     const newDiscountAmount = formatType(type, amount);
-    const newDiscountPrice = cart.reduce((acc, item) => {
+    console.log("productId", productId);
+    if (!productId) {
+      const newDiscountPriceAllProduct = cart.reduce((acc, item) => {
+        if (type === "Percented") {
+          return acc + item.price * item.variant.quantity * newDiscountAmount;
+        }
+
+        return acc + item.price * item.variant.quantity - newDiscountAmount;
+      }, 0);
+      return newDiscountPriceAllProduct;
+    }
+    const newDiscountPriceForProduct = cart.reduce((acc, item) => {
       if (item.id === productId && type === "Percented") {
         return acc + item.price * item.variant.quantity * newDiscountAmount;
       }
@@ -111,7 +125,7 @@ export default function PaymentForm({ totalPrice }: { totalPrice: number }) {
       }
       return acc + item.price * item.variant.quantity;
     }, 0);
-    return newDiscountPrice;
+    return newDiscountPriceForProduct;
   };
 
   const handleApplyCoupon = async () => {

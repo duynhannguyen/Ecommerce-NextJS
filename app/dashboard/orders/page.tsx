@@ -1,7 +1,7 @@
 import { db } from "@/server";
 import { auth } from "@/server/auth";
 import { orders } from "@/server/schema";
-import { eq } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 import { redirect } from "next/navigation";
 import {
   Table,
@@ -66,6 +66,7 @@ export default async function Page() {
         },
       },
     },
+    orderBy: [desc(orders.created)],
   });
   console.log("userOrders", userOrders);
   return (
