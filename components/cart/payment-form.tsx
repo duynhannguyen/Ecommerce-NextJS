@@ -210,6 +210,7 @@ export default function PaymentForm({ totalPrice }: { totalPrice: number }) {
         createOrderExecute({
           status: "pending",
           total: newPrice || totalPrice,
+          discountCodeId: couponId,
           paymentIntentId: data.data.success.paymentIntentId,
           product: cart.map((item) => ({
             productId: item.id,
