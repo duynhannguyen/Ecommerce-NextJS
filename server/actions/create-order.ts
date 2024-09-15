@@ -19,32 +19,35 @@ export const createOrder = action
       if (!user) {
         return { error: "User not found" };
       }
+      try {
+        const order = await db
+          .insert(orders)
+          .values({
+            status,
+            total,
+            userId: user.user.id,
+            paymentIntentId,
+          })
+          .returning();
 
-      const order = await db
-        .insert(orders)
-        .values({
-          status,
-          total,
-          userId: user.user.id,
-          paymentIntentId,
-        })
-        .returning();
-
-      const orderProducts = product.map(async (orderItem) => {
-        const newOrderProduct = await db.insert(orderProduct).values({
-          quantity: orderItem.quantity,
-          orderId: order[0].id,
-          productId: orderItem.productId,
-          productVariantId: orderItem.variantId,
+        const orderProducts = product.map(async (orderItem) => {
+          const newOrderProduct = await db.insert(orderProduct).values({
+            quantity: orderItem.quantity,
+            orderId: order[0].id,
+            productId: orderItem.productId,
+            productVariantId: orderItem.variantId,
+          });
         });
-      });
-      if (discountCodeId) {
-        const orderDiscountCode = await db.insert(discountCodeOrder).values({
-          orderId: order[0].id,
-          discountCodeId,
-        });
+        if (discountCodeId) {
+          const orderDiscountCode = await db.insert(discountCodeOrder).values({
+            orderId: order[0].id,
+            discountCodeId,
+          });
+        }
+        return { success: "Order has been added" };
+      } catch (error) {
+        console.log("error", error);
+        return { error: "Something went wrong, Please try again" };
       }
-
-      return { success: "Order has been added" };
     }
   );

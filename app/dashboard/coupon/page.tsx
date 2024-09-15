@@ -14,6 +14,7 @@ import {
   asc,
   desc,
   eq,
+  gt,
   gte,
   isNotNull,
   isNull,
@@ -38,7 +39,6 @@ const getExpiredCode = () => {
       productTitle: sql<string>`string_agg(${Product.title}, ', ')`.as(
         "productTitle"
       ),
-      orders: sql<number>`cast(count(${orders.id}) as int )`,
     })
     .from(discountCode)
     .leftJoin(
@@ -46,11 +46,6 @@ const getExpiredCode = () => {
       eq(discountCodeProduct.discountCodeId, discountCode.id)
     )
     .leftJoin(Product, eq(discountCodeProduct.productId, Product.id))
-    .leftJoin(
-      discountCodeOrder,
-      eq(discountCode.id, discountCodeOrder.discountCodeId)
-    )
-    .leftJoin(orders, eq(discountCodeOrder.orderId, orders.id))
     .where(
       or(
         and(
@@ -73,10 +68,9 @@ const getExpiredCode = () => {
       discountCode.uses,
       discountCode.isActive,
       discountCode.allProducts,
-      discountCode.id,
-      orders.id
+      discountCode.id
     )
-    .orderBy(asc(discountCode.expiresAt));
+    .orderBy(desc(discountCode.expiresAt));
 };
 
 const getUnExpiredCode = () => {
@@ -96,7 +90,7 @@ const getUnExpiredCode = () => {
         productTitle: sql<string>`string_agg(${Product.title}, ', ')`.as(
           "productTitle"
         ),
-        orders: sql<number>`cast(count(${discountCodeOrder.orderId}) as int )`,
+        // orders: sql<number>`cast(count(${discountCodeOrder.orderId}) as int )`,
       })
       .from(discountCode)
       .leftJoin(
@@ -104,10 +98,10 @@ const getUnExpiredCode = () => {
         eq(discountCodeProduct.discountCodeId, discountCode.id)
       )
       .leftJoin(Product, eq(discountCodeProduct.productId, Product.id))
-      .leftJoin(
-        discountCodeOrder,
-        eq(discountCode.id, discountCodeOrder.discountCodeId)
-      )
+      // .leftJoin(
+      //   discountCodeOrder,
+      //   eq(discountCode.id, discountCodeOrder.discountCodeId)
+      // )
       // .leftJoin(orders, eq(discountCodeOrder.orderId, orders.id))
       .where(
         and(
@@ -117,7 +111,7 @@ const getUnExpiredCode = () => {
           ),
           or(
             isNull(discountCode.limit),
-            gte(discountCode.limit, discountCode.uses)
+            gt(discountCode.limit, discountCode.uses)
           )
         )
       )

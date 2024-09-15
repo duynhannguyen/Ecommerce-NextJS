@@ -9,18 +9,17 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
 export const createPaymentIntent = action
   .schema(PaymentIntentSchema)
-  .action(
-    async ({ parsedInput: { amount, currency, cart, discountCodeId } }) => {
-      const user = await auth();
+  .action(async ({ parsedInput: { amount, currency, discountCodeId } }) => {
+    const user = await auth();
 
-      if (!user) {
-        return { error: "Please login to continue" };
-      }
+    if (!user) {
+      return { error: "Please login to continue" };
+    }
 
-      if (!amount) {
-        return { error: "No product to checkout" };
-      }
-
+    if (!amount) {
+      return { error: "No product to checkout" };
+    }
+    try {
       const paymentIntent = await stripe.paymentIntents.create({
         amount,
         currency,
@@ -28,7 +27,6 @@ export const createPaymentIntent = action
           enabled: true,
         },
         metadata: {
-          cart: JSON.stringify(cart),
           discountCodeId: discountCodeId || null,
         },
       });
@@ -39,5 +37,8 @@ export const createPaymentIntent = action
           user: user.user.email,
         },
       };
+    } catch (error) {
+      console.log("error", error);
+      return { error: "Something went wrong, Please try again " };
     }
-  );
+  });

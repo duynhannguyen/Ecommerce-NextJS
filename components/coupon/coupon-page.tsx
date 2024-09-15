@@ -131,7 +131,7 @@ export default function CouponPage({
                         formatNumber(code.limit - code.uses)
                       )}
                     </TableCell>
-                    <TableCell className="text-left">{code.orders}</TableCell>
+                    <TableCell className="text-left">{code.uses}</TableCell>
                     <TableCell className="text-left">
                       {code.allProducts ? <Globe /> : code.productTitle}
                     </TableCell>
@@ -245,12 +245,12 @@ export default function CouponPage({
                         formatNumber(code.limit - code.uses)
                       )}
                     </TableCell>
-                    <TableCell className="text-left">{code.orders}</TableCell>
+                    <TableCell className="text-left">{code.uses}</TableCell>
                     <TableCell className="text-left">
                       {code.allProducts ? <Globe /> : code.productTitle}
                     </TableCell>
                     <TableCell>
-                      {code.orders === 0 && (
+                      {code.uses === 0 && (
                         <DropdownMenu modal={false}>
                           <DropdownMenuTrigger asChild>
                             <Button variant="ghost" className="h-8 w-8 p-0">

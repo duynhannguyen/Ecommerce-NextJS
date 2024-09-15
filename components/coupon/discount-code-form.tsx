@@ -58,6 +58,7 @@ export default function DiscountCodeForm({
     },
     onSuccess: ({ data }) => {
       if (data?.success) {
+        form.reset();
         toast.dismiss();
         toast.success(data.success, { duration: 500 });
       }

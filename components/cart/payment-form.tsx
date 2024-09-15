@@ -58,6 +58,7 @@ export default function PaymentForm({ totalPrice }: { totalPrice: number }) {
       onSuccess: (data) => {
         if (data.data?.success) {
           const discountCode = data.data?.success;
+          console.log("discountCode", discountCode);
           const newPrice = newDiscountPrice({
             amount: discountCode.discountCode.discountAmount,
             type: discountCode.discountCode.discountType,
@@ -107,16 +108,16 @@ export default function PaymentForm({ totalPrice }: { totalPrice: number }) {
     productId?: number;
   }) => {
     const newDiscountAmount = formatType(type, amount);
-    console.log("productId", productId);
+
     if (!productId) {
       const newDiscountPriceAllProduct = cart.reduce((acc, item) => {
         if (type === "Percented") {
           return acc + item.price * item.variant.quantity * newDiscountAmount;
         }
-
-        return acc + item.price * item.variant.quantity - newDiscountAmount;
+        return acc + item.price * item.variant.quantity;
       }, 0);
-      return newDiscountPriceAllProduct;
+      const fixedPrice = newDiscountPriceAllProduct - amount;
+      return fixedPrice;
     }
     const newDiscountPriceForProduct = cart.reduce((acc, item) => {
       if (item.id === productId && type === "Percented") {
@@ -177,13 +178,6 @@ export default function PaymentForm({ totalPrice }: { totalPrice: number }) {
       amount: newPrice || totalPrice,
       discountCodeId: couponId,
       currency: "vnd",
-      cart: cart.map((item) => ({
-        quatity: item.variant.quantity,
-        price: item.price,
-        productId: item.id,
-        image: item.image,
-        title: item.name,
-      })),
     });
     if (data?.data?.error) {
       setLoading(false);
