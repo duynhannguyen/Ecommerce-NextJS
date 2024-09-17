@@ -1,6 +1,6 @@
 "use client";
 
-import { useCartStore } from "@/lib/client-store";
+import { CartItem, useCartStore } from "@/lib/client-store";
 import {
   AddressElement,
   PaymentElement,
@@ -21,6 +21,21 @@ import { motion } from "framer-motion";
 import { verifyDiscountCode } from "@/server/actions/verify-discount-code";
 import { cn } from "@/lib/utils";
 import FormSuccess from "../auth/form-success";
+
+type newDiscountPrice =
+  | newDiscountPriceForAllProduct
+  | newDiscountPriceForAllowedProduct;
+type newDiscountPriceForAllProduct = {
+  amount: number;
+  type: "Percented" | "Fixed";
+  allProduct: true;
+};
+type newDiscountPriceForAllowedProduct = {
+  allProduct: false;
+  amount: number;
+  type: "Percented" | "Fixed";
+  allowedProductsInCart: CartItem[];
+};
 
 export default function PaymentForm({ totalPrice }: { totalPrice: number }) {
   const stripe = useStripe();
@@ -58,27 +73,41 @@ export default function PaymentForm({ totalPrice }: { totalPrice: number }) {
         if (data.data?.success) {
           const discountCode = data.data?.success;
           console.log("discountCode", discountCode);
-          if (!discountCode.allProducts) {
+          if (
+            discountCode.productAllowed?.length !== 0 &&
+            !discountCode.allProducts
+          ) {
             const allowedProductsInCart = cart.filter((cartItem) =>
               discountCode.productAllowed?.includes(cartItem.id)
             );
-            const newPrice = newDiscountPrice({
+            const remainProductsInCart = cart.filter(
+              (cartItem) => !discountCode.productAllowed?.includes(cartItem.id)
+            );
+            const newPriceForAllowedProduct = newDiscountPrice({
               amount: discountCode.codeDetail?.discountCode.discountAmount!,
               type: discountCode.codeDetail?.discountCode.discountType!,
               allProduct: discountCode.allProducts,
+              allowedProductsInCart,
             });
+            const priceForRemainProducts = remainProductsInCart.reduce(
+              (acc, product) => {
+                return acc + product.price * product.variant.quantity;
+              },
+              0
+            );
+            const totalPriceAfterDiscount =
+              newPriceForAllowedProduct + priceForRemainProducts;
+            setNewPrice(totalPriceAfterDiscount);
           }
-          // const appliedProduct = cart.find(
-          //   (item) => item.id === discountCode.discountCodeProduct?.productId
-          // );
-          // setNewPrice(newPrice);
-          // setCouponId(discountCode.discountCode.id);
-          // if (discountCode.discountCode.allProducts) {
-          //   return setSuccessMessage(`Apply coupon successfully `);
-          // }
-          // setSuccessMessage(
-          //   `Apply coupon to product ${appliedProduct?.name} success `
-          // );
+          if (discountCode.allProducts === true) {
+            const newPriceForAllProduct = newDiscountPrice({
+              amount: discountCode.code?.discountAmount!,
+              type: discountCode.code?.discountType!,
+              allProduct: discountCode.allProducts,
+            });
+            setNewPrice(newPriceForAllProduct);
+          }
+          setSuccessMessage(`Apply coupon successfully `);
         }
         if (data.data?.error) {
           setErrorMessage(data.data.error);
@@ -102,17 +131,9 @@ export default function PaymentForm({ totalPrice }: { totalPrice: number }) {
     }
   };
 
-  const newDiscountPrice = ({
-    amount,
-    type,
-    allProduct,
-  }: {
-    amount: number;
-    type: "Percented" | "Fixed";
-    allProduct: boolean;
-  }) => {
+  const newDiscountPrice = (discount: newDiscountPrice) => {
+    const { amount, type, allProduct } = discount;
     const newDiscountAmount = formatType(type, amount);
-
     if (allProduct) {
       const newDiscountPriceAllProduct = cart.reduce((acc, item) => {
         if (type === "Percented") {
@@ -123,16 +144,24 @@ export default function PaymentForm({ totalPrice }: { totalPrice: number }) {
       const fixedPrice = newDiscountPriceAllProduct - amount;
       return fixedPrice;
     }
-    const newDiscountPriceForProduct = cart.reduce((acc, item) => {
-      if (type === "Percented") {
-        return acc + item.price * item.variant.quantity * newDiscountAmount;
-      }
-      if (type === "Fixed") {
-        return acc + item.price * item.variant.quantity - newDiscountAmount;
-      }
+    if (!allProduct) {
+      const newDiscountPriceForProduct = discount.allowedProductsInCart.reduce(
+        (acc, item) => {
+          if (type === "Percented") {
+            return acc + item.price * item.variant.quantity * newDiscountAmount;
+          }
+          if (type === "Fixed") {
+            return acc + item.price * item.variant.quantity - newDiscountAmount;
+          }
+          return acc + item.price * item.variant.quantity;
+        },
+        0
+      );
+      return newDiscountPriceForProduct;
+    }
+    return cart.reduce((acc, item) => {
       return acc + item.price * item.variant.quantity;
     }, 0);
-    return newDiscountPriceForProduct;
   };
 
   const handleApplyCoupon = async () => {
