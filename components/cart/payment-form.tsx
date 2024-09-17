@@ -8,7 +8,7 @@ import {
   useStripe,
 } from "@stripe/react-stripe-js";
 import { Button } from "../ui/button";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { createPaymentIntent } from "@/server/actions/create-payment-intent";
 import { useAction } from "next-safe-action/hooks";
 import { createOrder } from "@/server/actions/create-order";
@@ -26,7 +26,6 @@ export default function PaymentForm({ totalPrice }: { totalPrice: number }) {
   const stripe = useStripe();
   const elements = useElements();
   const { cart, setCheckoutProgress, clearCart, discountCode } = useCartStore();
-
   const [coupon, setCoupon] = useState("");
   const [couponId, setCouponId] = useState("");
   const [loading, setLoading] = useState(false);
@@ -34,7 +33,7 @@ export default function PaymentForm({ totalPrice }: { totalPrice: number }) {
   const [successMessage, setSuccessMessage] = useState("");
   const [newPrice, setNewPrice] = useState(0);
   const productInCartId = cart.map((cartItem) => cartItem.id);
-  console.log("cart", cart);
+  // console.log("cart", cart);
   const { execute: createOrderExecute, status: createOrderStatus } = useAction(
     createOrder,
     {
@@ -59,22 +58,27 @@ export default function PaymentForm({ totalPrice }: { totalPrice: number }) {
         if (data.data?.success) {
           const discountCode = data.data?.success;
           console.log("discountCode", discountCode);
-          const newPrice = newDiscountPrice({
-            amount: discountCode.discountCode.discountAmount,
-            type: discountCode.discountCode.discountType,
-            productId: discountCode.discountCodeProduct?.productId,
-          });
-          const appliedProduct = cart.find(
-            (item) => item.id === discountCode.discountCodeProduct?.productId
-          );
-          setNewPrice(newPrice);
-          setCouponId(discountCode.discountCode.id);
-          if (discountCode.discountCode.allProducts) {
-            return setSuccessMessage(`Apply coupon successfully `);
+          if (!discountCode.allProducts) {
+            const allowedProductsInCart = cart.filter((cartItem) =>
+              discountCode.productAllowed?.includes(cartItem.id)
+            );
+            const newPrice = newDiscountPrice({
+              amount: discountCode.codeDetail?.discountCode.discountAmount!,
+              type: discountCode.codeDetail?.discountCode.discountType!,
+              allProduct: discountCode.allProducts,
+            });
           }
-          setSuccessMessage(
-            `Apply coupon to product ${appliedProduct?.name} success `
-          );
+          // const appliedProduct = cart.find(
+          //   (item) => item.id === discountCode.discountCodeProduct?.productId
+          // );
+          // setNewPrice(newPrice);
+          // setCouponId(discountCode.discountCode.id);
+          // if (discountCode.discountCode.allProducts) {
+          //   return setSuccessMessage(`Apply coupon successfully `);
+          // }
+          // setSuccessMessage(
+          //   `Apply coupon to product ${appliedProduct?.name} success `
+          // );
         }
         if (data.data?.error) {
           setErrorMessage(data.data.error);
@@ -101,15 +105,15 @@ export default function PaymentForm({ totalPrice }: { totalPrice: number }) {
   const newDiscountPrice = ({
     amount,
     type,
-    productId,
+    allProduct,
   }: {
     amount: number;
     type: "Percented" | "Fixed";
-    productId?: number;
+    allProduct: boolean;
   }) => {
     const newDiscountAmount = formatType(type, amount);
 
-    if (!productId) {
+    if (allProduct) {
       const newDiscountPriceAllProduct = cart.reduce((acc, item) => {
         if (type === "Percented") {
           return acc + item.price * item.variant.quantity * newDiscountAmount;
@@ -120,10 +124,10 @@ export default function PaymentForm({ totalPrice }: { totalPrice: number }) {
       return fixedPrice;
     }
     const newDiscountPriceForProduct = cart.reduce((acc, item) => {
-      if (item.id === productId && type === "Percented") {
+      if (type === "Percented") {
         return acc + item.price * item.variant.quantity * newDiscountAmount;
       }
-      if (item.id === productId && type === "Fixed") {
+      if (type === "Fixed") {
         return acc + item.price * item.variant.quantity - newDiscountAmount;
       }
       return acc + item.price * item.variant.quantity;

@@ -29,7 +29,6 @@ export const Products = ({ variants, discountCodeList }: ProductType) => {
     }
     return variants;
   }, [paramTag]);
-
   return (
     <main className=" grid sm:grid-cols-1 md:grid-cols-2 gap-12 lg:grid-cols-3  ">
       {filterByTag.map((variant) => (
