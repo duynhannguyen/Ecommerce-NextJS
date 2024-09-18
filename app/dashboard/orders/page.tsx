@@ -154,7 +154,10 @@ export default async function Page() {
                       <DialogDescription className="text-center">
                         Your order total is {formatPrice(order.total)}
                       </DialogDescription>
-                      <Card className="flex flex-col gap-4  p-2 overflow-auto ">
+                      <Card
+                        className="flex flex-col gap-4 max-h-[480px]
+                      p-2 overflow-auto "
+                      >
                         <Table>
                           <TableHeader>
                             <TableRow>

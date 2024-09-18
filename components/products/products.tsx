@@ -8,19 +8,14 @@ import { formatPrice } from "@/lib/format-price";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useMemo } from "react";
 import { useCartStore } from "@/lib/client-store";
-import { unExpiredCode } from "@/app/page";
 
 type ProductType = {
   variants: VariantsWithProduct[];
-  discountCodeList: unExpiredCode;
 };
-export const Products = ({ variants, discountCodeList }: ProductType) => {
+export const Products = ({ variants }: ProductType) => {
   const params = useSearchParams();
   const paramTag = params.get("tag");
-  const { setDiscountCode } = useCartStore();
-  useEffect(() => {
-    return setDiscountCode(discountCodeList);
-  }, []);
+
   const filterByTag = useMemo(() => {
     if (paramTag && variants) {
       return variants.filter((variant) =>

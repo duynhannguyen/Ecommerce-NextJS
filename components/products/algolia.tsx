@@ -87,11 +87,11 @@ function Hit({
   };
 }) {
   return (
-    <div className="p-4 mb-2 hover:bg-secondary">
+    <div className="p-4 mb-2 hover:bg-secondary text-center md:text-left ">
       <Link
         href={`/products/${hit.objectID}?id=${hit.objectID}&productId=${hit.id}&price=${hit.price}&title=${hit.title}&type=${hit.productType}&image=${hit.variantImages}&variantId=${hit.objectID}`}
       >
-        <div className="text-left  flex w-full gap-12 items-center justify-between ">
+        <div className="md:text-left md:gap-5 gap-3   flex-col flex w-full lg:gap-12 md:flex-row  items-center justify-between ">
           <Image
             src={hit.variantImages}
             alt={hit.title}
@@ -99,7 +99,7 @@ function Hit({
             height={100}
           />
           <p
-            className="flex-grow basis-0"
+            className="flex-grow basis-0 "
             dangerouslySetInnerHTML={{
               __html: hit._highlightResult.title.value,
             }}

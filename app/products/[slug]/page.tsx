@@ -56,7 +56,6 @@ export default async function Page({ params }: { params: { slug: string } }) {
       },
     },
   });
-  console.log("variant", variant?.product.productOnCode);
   const availableCode = variant?.product.productOnCode.filter((code) => {
     const { codeOnProduct } = code;
     if (

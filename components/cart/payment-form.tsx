@@ -40,7 +40,7 @@ type newDiscountPriceForAllowedProduct = {
 export default function PaymentForm({ totalPrice }: { totalPrice: number }) {
   const stripe = useStripe();
   const elements = useElements();
-  const { cart, setCheckoutProgress, clearCart, discountCode } = useCartStore();
+  const { cart, setCheckoutProgress, clearCart } = useCartStore();
   const [coupon, setCoupon] = useState("");
   const [couponId, setCouponId] = useState("");
   const [loading, setLoading] = useState(false);
@@ -48,7 +48,6 @@ export default function PaymentForm({ totalPrice }: { totalPrice: number }) {
   const [successMessage, setSuccessMessage] = useState("");
   const [newPrice, setNewPrice] = useState(0);
   const productInCartId = cart.map((cartItem) => cartItem.id);
-  // console.log("cart", cart);
   const { execute: createOrderExecute, status: createOrderStatus } = useAction(
     createOrder,
     {
@@ -72,11 +71,19 @@ export default function PaymentForm({ totalPrice }: { totalPrice: number }) {
       onSuccess: (data) => {
         if (data.data?.success) {
           const discountCode = data.data?.success;
-          console.log("discountCode", discountCode);
+          if (
+            discountCode.productAllowed?.length === 0 &&
+            !discountCode.allProducts
+          ) {
+            return setErrorMessage(
+              "Coupon can not be applied for this product, consider anorther coupon "
+            );
+          }
           if (
             discountCode.productAllowed?.length !== 0 &&
             !discountCode.allProducts
           ) {
+            setCouponId(discountCode.codeDetail?.discountCode.id!);
             const allowedProductsInCart = cart.filter((cartItem) =>
               discountCode.productAllowed?.includes(cartItem.id)
             );
@@ -100,6 +107,7 @@ export default function PaymentForm({ totalPrice }: { totalPrice: number }) {
             setNewPrice(totalPriceAfterDiscount);
           }
           if (discountCode.allProducts === true) {
+            setCouponId(discountCode.code?.id!);
             const newPriceForAllProduct = newDiscountPrice({
               amount: discountCode.code?.discountAmount!,
               type: discountCode.code?.discountType!,
@@ -174,24 +182,6 @@ export default function PaymentForm({ totalPrice }: { totalPrice: number }) {
       coupon,
       cart: productInCartId,
     });
-    // const isCouponExpires = discountCode.find(
-    //   (code) => code.discountCode.code === coupon
-    // );
-    // if (!isCouponExpires) {
-    //   return setErrorMessage("Coupon is not available");
-    // }
-    // if (
-    //   !(
-    //     isCouponExpires.discountCode.expiresAt === null ||
-    //     isCouponExpires.discountCode.expiresAt > new Date()
-    //   ) ||
-    //   (isCouponExpires.discountCode.uses !== null &&
-    //     isCouponExpires.discountCode.limit !== null &&
-    //     isCouponExpires.discountCode.limit < isCouponExpires.discountCode.uses)
-    // ) {
-    //   return setErrorMessage("Coupon is expired");
-    // }
-    // setErrorMessage("ok");
   };
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

@@ -86,7 +86,6 @@ export default function DiscountCodeForm({
     [productId]
   );
   const onSubmit = (values: z.infer<typeof discountCodeSchema>) => {
-    console.log("values", values);
     execute(values);
   };
 

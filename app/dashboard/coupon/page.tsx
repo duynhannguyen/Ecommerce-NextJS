@@ -2,13 +2,7 @@
 
 import CouponPage from "@/components/coupon/coupon-page";
 import { db } from "@/server";
-import {
-  discountCode,
-  discountCodeOrder,
-  discountCodeProduct,
-  orders,
-  Product,
-} from "@/server/schema";
+import { discountCode, discountCodeProduct, Product } from "@/server/schema";
 import {
   and,
   asc,
@@ -74,61 +68,54 @@ const getExpiredCode = () => {
 };
 
 const getUnExpiredCode = () => {
-  return (
-    db
-      .select({
-        code: discountCode.code,
-        discountCodeId: discountCode.id,
-        discountAmount: discountCode.discountAmount,
-        discountType: discountCode.discountType,
-        limit: discountCode.limit,
-        createdAt: discountCode.createdAt,
-        expiresAt: discountCode.expiresAt,
-        uses: discountCode.uses,
-        isActive: discountCode.isActive,
-        allProducts: discountCode.allProducts,
-        productTitle: sql<string>`string_agg(${Product.title}, ', ')`.as(
-          "productTitle"
+  return db
+    .select({
+      code: discountCode.code,
+      discountCodeId: discountCode.id,
+      discountAmount: discountCode.discountAmount,
+      discountType: discountCode.discountType,
+      limit: discountCode.limit,
+      createdAt: discountCode.createdAt,
+      expiresAt: discountCode.expiresAt,
+      uses: discountCode.uses,
+      isActive: discountCode.isActive,
+      allProducts: discountCode.allProducts,
+      productTitle: sql<string>`string_agg(${Product.title}, ', ')`.as(
+        "productTitle"
+      ),
+    })
+    .from(discountCode)
+    .leftJoin(
+      discountCodeProduct,
+      eq(discountCodeProduct.discountCodeId, discountCode.id)
+    )
+    .leftJoin(Product, eq(discountCodeProduct.productId, Product.id))
+
+    .where(
+      and(
+        or(
+          isNull(discountCode.expiresAt),
+          gte(discountCode.expiresAt, new Date())
         ),
-        // orders: sql<number>`cast(count(${discountCodeOrder.orderId}) as int )`,
-      })
-      .from(discountCode)
-      .leftJoin(
-        discountCodeProduct,
-        eq(discountCodeProduct.discountCodeId, discountCode.id)
-      )
-      .leftJoin(Product, eq(discountCodeProduct.productId, Product.id))
-      // .leftJoin(
-      //   discountCodeOrder,
-      //   eq(discountCode.id, discountCodeOrder.discountCodeId)
-      // )
-      // .leftJoin(orders, eq(discountCodeOrder.orderId, orders.id))
-      .where(
-        and(
-          or(
-            isNull(discountCode.expiresAt),
-            gte(discountCode.expiresAt, new Date())
-          ),
-          or(
-            isNull(discountCode.limit),
-            gt(discountCode.limit, discountCode.uses)
-          )
+        or(
+          isNull(discountCode.limit),
+          gt(discountCode.limit, discountCode.uses)
         )
       )
-      .orderBy(desc(discountCode.expiresAt))
-      .groupBy(
-        discountCode.code,
-        discountCode.discountAmount,
-        discountCode.discountType,
-        discountCode.limit,
-        discountCode.createdAt,
-        discountCode.expiresAt,
-        discountCode.uses,
-        discountCode.isActive,
-        discountCode.id,
-        discountCode.allProducts
-      )
-  );
+    )
+    .orderBy(desc(discountCode.expiresAt))
+    .groupBy(
+      discountCode.code,
+      discountCode.discountAmount,
+      discountCode.discountType,
+      discountCode.limit,
+      discountCode.createdAt,
+      discountCode.expiresAt,
+      discountCode.uses,
+      discountCode.isActive,
+      discountCode.id,
+      discountCode.allProducts
+    );
 };
 export type CouponPageProps = {
   expiredCode: Awaited<ReturnType<typeof getExpiredCode>>;
@@ -140,6 +127,6 @@ export default async function Page() {
     getExpiredCode(),
     getUnExpiredCode(),
   ]);
-  console.log("unExpiredCode", unExpiredCode);
+
   return <CouponPage expiredCode={expiredCode} unExpiredCode={unExpiredCode} />;
 }

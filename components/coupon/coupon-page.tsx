@@ -46,12 +46,8 @@ export default function CouponPage({
   expiredCode,
   unExpiredCode,
 }: CouponPageProps) {
-  console.log("unExpiredCode", unExpiredCode);
-
   const toggleDiscountCode = async (id: string, status: boolean) => {
-    console.log(id, status);
     const toggleCode = await toggleActiveCode({ id, status });
-    console.log("toggleCode", toggleCode);
     if (toggleCode?.data?.success) {
       return toast.success(toggleCode.data.success);
     }
