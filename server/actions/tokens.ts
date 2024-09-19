@@ -55,10 +55,13 @@ export const newVerification = async (email: string) => {
   });
   if (!exitstingUser) return { error: "Email does not exist" };
 
-  await db.update(users).set({
-    emailVerified: new Date(),
-    email: exitstingToken.email,
-  });
+  await db
+    .update(users)
+    .set({
+      emailVerified: new Date(),
+      email: exitstingToken.email,
+    })
+    .where(eq(users.id, exitstingUser.id));
   await db.delete(emailTokens).where(eq(emailTokens.id, exitstingToken.id));
 
   return { success: "Email Verified" };
