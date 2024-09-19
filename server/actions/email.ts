@@ -21,9 +21,9 @@ export const sendPasswordResetEmail = async (email: string, token: string) => {
 
 export const sendTwoFactorTokenEmail = async (email: string, token: string) => {
   const { data, error } = await resend.emails.send({
-    from: "onboarding@resend.dev",
+    from: "twofactortoken@shopandgo.online",
     to: email,
-    subject: "Buyme - Your 2 Factor Token",
+    subject: "Shopandgo - Your 2 Factor Token",
     html: `<p>Your Confirmation Code: ${token} </p>`,
   });
 
@@ -36,9 +36,9 @@ export const sendTwoFactorTokenEmail = async (email: string, token: string) => {
 const sendVerificationEmail = async (email: string, token: string) => {
   const confirmLink = `${domain}/auth/new-verification?email=${email}`;
   const { data, error } = await resend.emails.send({
-    from: "onboarding@resend.dev",
+    from: "verificationemail@shopandgo.online",
     to: email,
-    subject: "Buyme - Confirmation Email",
+    subject: "Shopandgo - Confirmation Email",
     html: `<p>Click to <a href='${confirmLink}'>confirm your email </a>  </p>`,
   });
 
